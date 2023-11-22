@@ -10,8 +10,8 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
-app.use('/views', express.static(__dirname + '/views')); // [이아영] views/ 파일들 조회
-app.use("/views", routes);
+app.use('/api', express.static(__dirname + '/views')); // [이아영] views/ 파일들 조회
+app.use('/api', routes);
 
 // 서버 실행
 app.listen(app.get('port'), () => {
