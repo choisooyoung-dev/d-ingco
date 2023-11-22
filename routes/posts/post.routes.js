@@ -41,10 +41,15 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 게시글 조회(html에서 어케 그리냐,, map..?)
+// 게시글 전체 조회(html에서 어케 그리냐,, map..?)
 router.get('/', async (req, res) => {
-  
-})
+  try {
+    const posts = await prisma.POST.findMany();
+    res.status(200).json({ posts });
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 // 게시글 상세 조회
 
