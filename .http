@@ -2,8 +2,19 @@ POST http://localhost:3000/api/users/signup
 content-type: application/json
 
 {
-    "email":"tndud0120@naver.com",
-    "password": "tndud1",
-    "confirmPassword":"tndud1",
-    "username":"쑤옹1"
+    "sign_username": "수영",
+    "sign_password": "tndud1234",
+    "sign_name": "최수영",
+    "sign_email": "s000120@gmail.com"
 } 
+
+###
+
+GET http://localhost:3000/api/users/login
+content-type: application/json
+
+{
+    "username": "수영",
+    "password": "tndud1234"
+}  
+ 
