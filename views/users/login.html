@@ -26,7 +26,7 @@
         params.append('password', password);
 
         axios
-          .post('http://localhost:3000/views/users/login', params)
+          .post('http://localhost:3000/api/users/login', params)
           .then((response) => {
             console.log('서버 응답:', response.data);
           })
