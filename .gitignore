@@ -1,6 +1,9 @@
 # ADD
 .env
 
+# .vscode folder
+/.vscode
+
 # Logs
 logs
 *.log
