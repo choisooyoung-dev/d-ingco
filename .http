@@ -1,11 +1,24 @@
+
+###
+# 회원가입
 POST http://localhost:3000/api/users/signup
 content-type: application/json
 
 {
-    "email":"tndud0120@naver.com",
-    "password": "tndud1",
-    "confirmPassword":"tndud1",
-    "username":"쑤옹1"
+    "sign_email":"1234567",
+    "sign_password": "1234567",
+    "sign_username":"1234567",
+    "sign_name":"1234567"
+} 
+
+###
+# 로그인
+POST http://localhost:3000/api/users/login
+content-type: application/json
+
+{
+    "uesr_name":"1234567",
+    "password": "1234567",
 } 
 
 ##### 게시글 - 아영
@@ -15,10 +28,9 @@ POST http://localhost:3000/api/posts/
 content-type: application/json
 
 {
-    "email":"tndud0120@naver.com",
-    "password": "tndud1",
-    "confirmPassword":"tndud1",
-    "username":"쑤옹1"
+    "user_id":"0",
+    "title":"title09",
+    "content": "content09",
 } 
 
 

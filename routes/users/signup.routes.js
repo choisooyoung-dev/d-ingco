@@ -1,5 +1,4 @@
 const express = require('express');
-const app = express();
 const router = express.Router();
 const bodyParser = require('body-parser'); // [이아영] body값 조회 패키지
 const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 패키지
@@ -7,7 +6,8 @@ const prisma = new PrismaClient();
 const bcrypt = require('bcrypt'); // [이아영] 암호 해시화 패키지
 
 // 회원 정보 저장(CREATE)
-app.post('/signup', async (req, res) => {
+router.post('/signup', async (req, res) => {
+  console.log("test");
   const { sign_username, sign_password, sign_name, sign_email } = req.body; // body 값 조회
   console.log(
     'sign_username, sign_password, sign_name, sign_email: ',

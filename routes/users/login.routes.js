@@ -5,15 +5,15 @@ const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 
 const prisma = new PrismaClient();
 const bcrypt = require('bcrypt'); // [이아영] 암호 해시화 패키지
 
-router.post('/users/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
-    const { username, password } = req.body; // body 값 조회
+    const { user_name, password } = req.body; // body 값 조회
 
     // 조회 : 회원 정보
     // id로 검색하고 pw 값 받아오기
     const user = await prisma.USER.findUnique({
       where: {
-        user_name: username
+        user_name: user_name
       }
     });
 
