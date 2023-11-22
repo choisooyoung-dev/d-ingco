@@ -48,8 +48,8 @@ app.post('/signup', async (req, res) => {
     };
     await createUser();
     await prisma.$disconnect();
-
     res.status(201).json({ user_info: { sign_username, sign_name, sign_email } });
+
   } catch (error) {
     console.log(error);
     // SequelizeValidationError : Models의 유효성 검사 에러

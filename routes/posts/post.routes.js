@@ -8,32 +8,35 @@ const prisma = new PrismaClient();
 // 게시글 저장
 router.post('/', async (req, res) => {
   try {
-    const { username, password } = req.body; // body 값 조회
-
-    // 조회 : 회원 정보
-    // id로 검색하고 pw 값 받아오기
-    const user = await prisma.USER.findUnique({
-      where: {
-        user_name: username
-      }
-    });
-
-    // ERR 400 : 아이디, 이메일 미존재
-    if (!user) { throw new Error("400-아이디미존재"); }
-    // 조회 : 암호화된 비밀번호
-    const passwordValue = user.pw;
-    // bcrypt.compare(사용자가 로그인 시 입력한 비밀번호, DB에 저장된 암호화 비밀번호) : 
-    const equalPassword = await bcrypt.compare(password, passwordValue);
-    console.log('equalPassword: ', equalPassword);
-
-    // ERR 404 : 비밀번호 불일치
-    if (!equalPassword) { throw new Error("400-비밀번호불일치"); }
-
+    const { title, content } = req.body; // body 값 조회
+    // ERR 400 : 제목 미입력
+    if (!title) {
+      throw new Error("400-제목미입력");
+    }
+    // ERR 400 : 내용 미입력
+    if (!content) {
+      throw new Error("400-내용미입력");
+    }
+    // 회원 번호 저장 미구현
+    const createPost = async () => {
+      const post = await prisma.POST.create({
+        data: {
+          user_id: 0,
+          title: title,
+          content: content,
+        }
+      });
+      return post;
+    };
+    await createPost(); // 여기가 문제라는데?
+    await prisma.$disconnect(); // prisma 연결 끊기
+    res.status(201).json({ Message: "저장이 완료되었습니다~" });
   } catch (error) {
-    if (error.message === "400-") {
-      res.status(400).json({ errorMessage: "400" });
-    } else if (error.message === "402-") {
-      res.status(400).json({ errorMessage: "402" });
+    console.log(error);
+    if (error.message === "400-제목미입력") {
+      res.status(400).json({ errorMessage: "제목을 입력해주세요." });
+    } else if (error.message === "400-내용미입력") {
+      res.status(400).json({ errorMessage: "내용을 입력해주세요." });
     }
   }
 });

@@ -17,8 +17,8 @@
           내용 :
           <input type="text" id="content" placeholder="내용을 입력해주세요." />
         </div>
-        <button type="button" onclick="submitForm()">저정하기</button>
-        <button type="button" onclick="submitForm()">수정하기</button>
+        <button type="button" onclick="submitSaveForm()">저정하기</button>
+        <button type="button" onclick="submitEditForm()">수정하기</button>
       </form>
     </div>
 
@@ -26,16 +26,36 @@
     <!-- 프론트에서 백으로 데이터 넘겨주기!-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-      function submitForm() {
+      function submitSaveForm() {
         const title = document.getElementById('title').value;
         const content = document.getElementById('content').value;
 
+        // URLSearchParams() : URL 쿼리 문자열을 다루는 내장 클래스
+        const params = new URLSearchParams();
+        params.append('title', title);
+        params.append('content', content);
+
+        axios
+          .post('http://localhost:3000/views/posts/edit', params)
+          .then((response) => {
+            console.log('서버 응답:', response.data);
+          })
+          .catch((error) => {
+            console.error('오류 발생:', error);
+          });
+      }
+
+      function submitEditForm() {
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+
+        // URLSearchParams() : URL 쿼리 문자열을 다루는 내장 클래스
         const params = new URLSearchParams();
         params.append('username', title);
         params.append('password', content);
 
         axios
-          .post('http://localhost:3000/views/users/login', params)
+          .put('http://localhost:3000/views/posts/post-edit', params)
           .then((response) => {
             console.log('서버 응답:', response.data);
           })
