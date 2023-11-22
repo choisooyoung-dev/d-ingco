@@ -21,9 +21,16 @@ content-type: application/json
     "username":"쑤옹1"
 } 
 
+
 ###
 # 게시글 전체 조회
 GET http://localhost:3000/api/posts/
+
+
+###
+# 게시글 상세 조회
+GET http://localhost:3000/api/posts/7
+
 
 ### 
 # 게시글 수정

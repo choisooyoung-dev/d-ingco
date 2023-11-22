@@ -52,7 +52,26 @@ router.get('/', async (req, res) => {
 });
 
 // 게시글 상세 조회
-
+router.get('/:post_id', async (req, res) => {
+  try {
+    const { post_id } = req.params;
+    console.log('post_id: ', post_id);
+    const post = await prisma.POST.findUnique({
+      where: {
+        post_id: +post_id
+      }
+    });
+    if (!post) {
+      throw new Error("404-게시글미존재");
+    }
+    res.status(200).json({ post });
+  } catch (error) {
+    console.log(error);
+    if (error.message === "404-게시글미존재") {
+      return res.status(404).json({ errorMessage: "게시글이 존재하지 않습니다." });
+    }
+  }
+});
 
 // 게시글 수정
 router.put('/', async (req, res) => {
