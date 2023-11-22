@@ -3,6 +3,7 @@ const app = express();
 const router = express.Router();
 
 const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 패키지
+const e = require('express');
 const prisma = new PrismaClient();
 
 // 게시글 저장
@@ -117,6 +118,35 @@ router.put('/:post_id', async (req, res) => {
 });
 
 // 게시글 삭제
+router.delete('/:post_id', async (req, res) => {
+  try {
+    const { post_id } = req.params;
+    console.log('post_id: ', post_id);
 
+    // ERR 404 : 게시글이 없을 경우(없을 수 없긴 한데 만들어두자)
+    const post = await prisma.POST.findUnique({
+      where: {
+        post_id: +post_id
+      }
+    });
+    if (!post) {
+      throw new Error("404-게시글미존재");
+    }
+
+    const deleteUser = await prisma.POST.delete({
+      where: {
+        // 회원 번호 식별 기능 미구현
+        post_id: +post_id,
+        user_id: 0
+      }
+    });
+    console.log('deleteUser: ', deleteUser);
+  } catch (error) {
+    console.log(error);
+    if (error.message === "404-게시글미존재") {
+      return res.status(404).json({ errorMessage: "게시글이 존재하지 않습니다." });
+    }
+  }
+});
 
 module.exports = router;

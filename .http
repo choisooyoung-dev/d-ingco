@@ -33,16 +33,13 @@ content-type: application/json
     "content": "content10"
 } 
 
-
 ###
 # 게시글 전체 조회
 GET http://localhost:3000/api/posts
 
-
 ###
 # 게시글 상세 조회
 GET http://localhost:3000/api/posts/1
-
 
 ### 
 # 게시글 수정
@@ -53,3 +50,7 @@ content-type: application/json
     "title":"1",
     "content": "1"
 } 
+
+###
+# 게시글 삭제
+DELETE http://localhost:3000/api/posts/2
