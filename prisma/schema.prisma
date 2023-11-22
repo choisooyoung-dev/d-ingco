@@ -14,7 +14,8 @@ model USER {
   user_id   Int     @id @default(autoincrement()) @map("user_id")
   user_name String  @unique @map("user_name")
   name      String  @map("name")
-  email     String  @map("email")
+  email     String  @unique @map("email")
+  pw        String  @map("pw")
   created_at DateTime @default(now()) @map("created_at")
   updated_at DateTime @updatedAt @map("updated_at")
 
