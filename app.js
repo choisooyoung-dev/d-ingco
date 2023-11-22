@@ -14,7 +14,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// app.use('/api', express.static(__dirname + '/views')); // [이아영] views/ 파일들 조회
+app.use('/api', express.static(__dirname + '/views')); // [이아영] views/ 파일들 조회
 
 app.use("/api/users", loginRouter);
 app.use("/api/users", signupRouter);

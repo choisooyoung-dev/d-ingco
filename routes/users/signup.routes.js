@@ -7,16 +7,7 @@ const bcrypt = require('bcrypt'); // [이아영] 암호 해시화 패키지
 
 // 회원 정보 저장(CREATE)
 router.post('/signup', async (req, res) => {
-  console.log("test");
   const { sign_username, sign_password, sign_name, sign_email } = req.body; // body 값 조회
-  console.log(
-    'sign_username, sign_password, sign_name, sign_email: ',
-    sign_username,
-    sign_password,
-    sign_name,
-    sign_email,
-  );
-
   try {
     // ERR 400 : 아이디 중복
     const existsUsername = await prisma.USER.findUnique({
