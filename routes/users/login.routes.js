@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const router = express.Router();
-const bodyParser = require('body-parser'); // [이아영] body값 조회 패키지
 
 const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 패키지
 const prisma = new PrismaClient();
@@ -10,27 +9,25 @@ const bcrypt = require('bcrypt'); // [이아영] 암호 해시화 패키지
 router.post('/', async (req, res) => {
   try {
     const { username, password } = req.body; // body 값 조회
-    console.log('username, password: ', username, password);
 
     // 조회 : 회원 정보
-    const user = await prisma.USER.findMany({
+    // id로 검색하고 pw 값 받아오기
+    const user = await prisma.USER.findUnique({
       where: {
-        AND: {
-          user_name: username,
-          pw: password
-        }
+        user_name: username
       }
     });
-    // ERR 400 : 아이디, 이메일 미존재
-    if (!user) { throw new Error("400-아이디미존재"); }
 
+    // ERR 400 : 아이디, 이메일 미존재
+    if (user.length === 0) { throw new Error("400-아이디미존재"); }
     // 조회 : 암호화된 비밀번호
-    const m_password_value = user.get("m_password");
+    const passwordValue = user.pw;
     // bcrypt.compare(사용자가 로그인 시 입력한 비밀번호, DB에 저장된 암호화 비밀번호) : 
-    const equal_m_password = await bcrypt.compare(m_password, m_password_value);
+    const equalPassword = await bcrypt.compare(password, passwordValue);
+    console.log('equalPassword: ', equalPassword);
 
     // ERR 404 : 비밀번호 불일치
-    if (!equal_m_password) { throw new Error("400-비밀번호불일치"); }
+    if (!equalPassword) { throw new Error("400-비밀번호불일치"); }
 
     // 로그인 성공 시 토큰 생성
     // jwt.sign({payload},"암호키",{expiresIn: 유효 시간}) : 토큰 생성
