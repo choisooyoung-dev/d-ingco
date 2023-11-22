@@ -3,7 +3,6 @@ const app = express();
 const router = express.Router();
 
 const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 패키지
-const e = require('express');
 const prisma = new PrismaClient();
 
 // 게시글 저장
@@ -20,9 +19,10 @@ router.post('/', async (req, res) => {
     }
     // 회원 번호 저장 미구현
     const createPost = async () => {
+      // user_id가 외래키로 설정되었기 때문에 게시글을 저장할 때 입력된 user_id 값이 USER 테이블에 값이 없을 경우 오류가 발생함
       const post = await prisma.POST.create({
         data: {
-          user_id: 0,
+          user_id: 1,
           title: title,
           content: content,
         }
@@ -45,8 +45,18 @@ router.post('/', async (req, res) => {
 // 게시글 전체 조회(html에서 어케 그리냐,, map..?)
 router.get('/', async (req, res) => {
   try {
-    const posts = await prisma.POST.findMany();
-    res.status(200).json({ posts });
+    const posts = await prisma.POST.findMany({
+      select: {
+        title: true,
+        content: true,
+        user: {
+          select: {
+            user_name: true,
+          },
+        },
+      },
+    });
+    res.status(200).json(posts);
   } catch (error) {
     console.log(error);
   }
@@ -56,7 +66,6 @@ router.get('/', async (req, res) => {
 router.get('/:post_id', async (req, res) => {
   try {
     const { post_id } = req.params;
-    console.log('post_id: ', post_id);
     const post = await prisma.POST.findUnique({
       where: {
         post_id: +post_id
@@ -95,7 +104,7 @@ router.put('/:post_id', async (req, res) => {
       const post = await prisma.POST.update({
         where: {
           post_id: +post_id,
-          user_id: 0
+          user_id: 1
         },
         data: {
           title: title,
@@ -137,7 +146,7 @@ router.delete('/:post_id', async (req, res) => {
       where: {
         // 회원 번호 식별 기능 미구현
         post_id: +post_id,
-        user_id: 0
+        user_id: 1
       }
     });
     console.log('deleteUser: ', deleteUser);
