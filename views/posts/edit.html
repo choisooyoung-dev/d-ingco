@@ -36,7 +36,7 @@
         params.append('content', content);
 
         axios
-          .post('http://localhost:3000/views/posts/edit', params)
+          .post('http://localhost:3000/api/posts', params)
           .then((response) => {
             console.log('서버 응답:', response.data);
           })
@@ -55,7 +55,7 @@
         params.append('password', content);
 
         axios
-          .put('http://localhost:3000/views/posts/post-edit', params)
+          .put('http://localhost:3000/api/post-edit', params)
           .then((response) => {
             console.log('서버 응답:', response.data);
           })

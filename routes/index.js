@@ -6,6 +6,6 @@ const editRouter = require('./posts/post.routes.js'); // [
 // const postsRouter = require('./posts/'); // [이아영] posts 라우터 조회
 
 router.use("/users/login", loginRouter);
-router.use("/posts/edit", editRouter);
+router.use("/posts", editRouter);
 
 module.exports = router;
