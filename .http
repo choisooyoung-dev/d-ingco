@@ -13,11 +13,14 @@ content-type: application/json
 
 ###
 
-GET http://localhost:3000/api/users/login
+POST http://localhost:3000/api/users/login
 content-type: application/json
 
 {
     "username": "수영",
     "password": "tndud1234"
 }  
- 
+
+###
+# LOGOUT
+GET http://localhost:3000/api/users/logout
