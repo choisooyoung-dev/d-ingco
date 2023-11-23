@@ -6,6 +6,7 @@ const cors = require('cors'); // [이아영] 127.0.0.1 이슈 해결 패키지
 const authRouter = require('./routes/users/auth.routes.js');
 const signupRouter = require('./routes/users/signup.routes.js');
 const editRouter = require('./routes/posts/post.routes.js');
+const infoRouter = require('./routes/users/info.routes.js');
 
 app.set('port', process.env.PORT || 3000);
 app.use(express.json());
@@ -17,6 +18,7 @@ app.use(cors());
 
 app.use('/api/users', authRouter);
 app.use('/api/users', signupRouter);
+app.use('/api/users', infoRouter);
 app.use('/api/posts', editRouter);
 
 // 서버 실행

@@ -25,9 +25,9 @@ router.post('/', authMiddleware, async (req, res) => {
         content: content
       }
     });
-
     await prisma.$disconnect(); // prisma 연결 끊기
     res.status(201).json({ Message: "게시글 저장이 완료되었습니다~" });
+
   } catch (error) {
     console.log(error);
     if (error.message === "400-제목미입력") {
@@ -38,24 +38,22 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// 게시글 전체 조회(html에서 어케 그리냐,, map..?)
+// 게시글 전체 조회
 router.get('/', async (req, res) => {
-  try {
-    const posts = await prisma.POST.findMany({
-      select: {
-        title: true,
-        content: true,
-        user: {
-          select: {
-            user_name: true,
-          },
-        },
-      },
-    });
-    res.status(200).json(posts);
-  } catch (error) {
-    console.log(error);
-  }
+  const posts = await prisma.POST.findMany({
+    select: {
+      user_id: true,
+      title: true,
+      content: true,
+      created_at: true,
+      updated_at: true,
+    },
+  });
+
+  if (posts.lenth == 0)
+    return res.status(400).json({ errorMessage: '전체 조회에 실패했습니다.' });
+
+  return res.status(200).json({ data: posts });
 });
 
 // 게시글 상세 조회
