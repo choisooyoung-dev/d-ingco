@@ -1,36 +1,42 @@
-
+##### 게시글 - 최수영
 ###
 # 회원가입
 POST http://localhost:3000/api/users/signup
 content-type: application/json
 
 {
-    "sign_email":"1234567",
-    "sign_password": "1234567",
-    "sign_username":"1234567",
-    "sign_name":"1234567"
+    "sign_username": "test3",
+    "sign_password": "123456",
+    "sign_name": "test3",
+    "sign_email": "test3@naver.com"
 } 
 
 ###
 # 로그인
+
 POST http://localhost:3000/api/users/login
 content-type: application/json
 
 {
-    "uesr_name":"1234567",
-    "password": "1234567",
+    "user_name":"test3",
+    "password": "123456"
 } 
 
-##### 게시글 - 아영
+###
+# 로그아웃
+
+GET http://localhost:3000/api/users/logout
+
+##### 게시글 - 이아영
 ###
 # 게시글 저장
 POST http://localhost:3000/api/posts
 content-type: application/json
 
 {
-    "user_id":"0",
-    "title":"title10",
-    "content": "content10"
+    "user_id":"1",
+    "title":"title6",
+    "content": "content6"
 } 
 
 ###
@@ -43,12 +49,12 @@ GET http://localhost:3000/api/posts/1
 
 ### 
 # 게시글 수정
-PUT http://localhost:3000/api/posts/1
+PUT http://localhost:3000/api/posts/5
 content-type: application/json
 
 {
-    "title":"1",
-    "content": "1"
+    "title":"6666",
+    "content": "6666"
 } 
 
 ###
