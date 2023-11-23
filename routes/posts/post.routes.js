@@ -1,37 +1,43 @@
 const express = require('express');
-const app = express();
 const router = express.Router();
-
+const authMiddleware = require('../../middlewares/auth.middleware.js');
+const jwt = require("jsonwebtoken");
 const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 패키지
 const prisma = new PrismaClient();
 
 // 게시글 저장
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   try {
     const { title, content } = req.body; // body 값 조회
+    // 게시글에 저장할 회원의 번호 조회
+    const { authorization } = req.cookies; // cookie 값 조회
+    const [authType, authToken] = (authorization ?? "").split(" ");
+    const { user_name } = jwt.verify(authToken, "dingco-secret-key");
+    const user = await prisma.USER.findUnique({
+      select: { user_id: true },
+      where: { user_name }
+    });
+    const user_id = user.user_id;
+
+    // 쿠키 날리는 기능이 있어야 할 것 같은딩
+    // 쿠키에 있는 user_name 값 조회한 후 user_id 출력하기
+
     // ERR 400 : 제목 미입력
-    if (!title) {
-      throw new Error("400-제목미입력");
-    }
+    if (!title) { throw new Error("400-제목미입력"); }
     // ERR 400 : 내용 미입력
-    if (!content) {
-      throw new Error("400-내용미입력");
-    }
+    if (!content) { throw new Error("400-내용미입력"); }
     // 회원 번호 저장 미구현
-    const createPost = async () => {
-      // user_id가 외래키로 설정되었기 때문에 게시글을 저장할 때 입력된 user_id 값이 USER 테이블에 값이 없을 경우 오류가 발생함
-      const post = await prisma.POST.create({
-        data: {
-          user_id: 1,
-          title: title,
-          content: content,
-        }
-      });
-      return post;
-    };
-    await createPost(); // 여기가 문제라는데?
+    // user_id가 외래키로 설정되었기 때문에 게시글을 저장할 때 입력된 user_id 값이 USER 테이블에 값이 없을 경우 오류가 발생함
+    const post = await prisma.POST.create({
+      data: {
+        user_id: user_id,
+        title: title,
+        content: content,
+      }
+    });
+
     await prisma.$disconnect(); // prisma 연결 끊기
-    res.status(201).json({ Message: "저장이 완료되었습니다~" });
+    res.status(201).json({ Message: "게시글 저장이 완료되었습니다~" });
   } catch (error) {
     console.log(error);
     if (error.message === "400-제목미입력") {
@@ -84,7 +90,7 @@ router.get('/:post_id', async (req, res) => {
 });
 
 // 게시글 수정
-router.put('/:post_id', async (req, res) => {
+router.put('/:post_id', authMiddleware, async (req, res) => {
   try {
     // 게시글 번호, 사용자 번호 필요, 사용자 인증이 일치할 경우에 업데이트
     // 근데 애초에 사용자 본인이 아닐 경우엔 수정하기 버튼을 비활성화 해야 할 것으로 생각됨
@@ -98,22 +104,19 @@ router.put('/:post_id', async (req, res) => {
     if (!content) {
       throw new Error("400-내용미입력");
     }
-
     // 게시글 수정
-    const updatePost = async () => {
-      const post = await prisma.POST.update({
-        where: {
-          post_id: +post_id,
-          user_id: 1
-        },
-        data: {
-          title: title,
-          content: content,
-        }
-      });
-      return post;
-    };
-    await updatePost();
+    const post = await prisma.POST.update({
+      where: {
+        post_id: +post_id,
+        user_id: 1
+      },
+      data: {
+        title: title,
+        content: content
+        // 수정 시간만 업데이트 되기 기능 추가 필요한데
+        // 다른 기능들 만들고 오자..ㅜ
+      }
+    });
     await prisma.$disconnect(); // prisma 연결 끊기
     res.status(201).json({ Message: "수정이 완료되었습니다~" });
   } catch (error) {
@@ -127,7 +130,7 @@ router.put('/:post_id', async (req, res) => {
 });
 
 // 게시글 삭제
-router.delete('/:post_id', async (req, res) => {
+router.delete('/:post_id', authMiddleware, async (req, res) => {
   try {
     const { post_id } = req.params;
     console.log('post_id: ', post_id);
