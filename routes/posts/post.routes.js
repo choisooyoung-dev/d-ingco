@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../../middlewares/auth.middleware.js');
-const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 패키지
 const { CustomError, ErrorTypes } = require('../../lib/error.handler.js');
 const prisma = new PrismaClient();
@@ -26,18 +25,13 @@ router.post('/', authMiddleware, async (req, res) => {
     // post의 user_id가 맞지 않을 떄 에러설정 해줘야함 - 수영
     const post = await prisma.POST.create({
       data: {
-        user_id: user_id,
-        title: title,
-        content: content,
+        user_id,
+        title,
+        content,
       },
     });
     await prisma.$disconnect(); // prisma 연결 끊기
-<<<<<<< HEAD
     res.status(201).json({ Message: '게시글 저장이 완료되었습니다~' });
-=======
-    res.status(201).json({ Message: "게시글 저장이 완료되었습니다~" });
-
->>>>>>> 5a3cb8fc17a92c872bf648bddf0c47dc1d9723d9
   } catch (error) {
     console.log(error);
     if (error.message === '400-제목미입력') {
@@ -76,16 +70,15 @@ router.get('/:post_id', async (req, res) => {
       },
     });
     if (!post) {
-      throw new Error('404-게시글미존재');
+      throw new CustomError(
+        ErrorTypes.PostNotExistError,
+        '게시글이 존재하지 않습니다.',
+      );
     }
     res.status(200).json({ post });
   } catch (error) {
     console.log(error);
-    if (error.message === '404-게시글미존재') {
-      return res
-        .status(404)
-        .json({ errorMessage: '게시글이 존재하지 않습니다.' });
-    }
+    return res.status(404).json({ message: error.message });
   }
 });
 
@@ -108,16 +101,18 @@ router.put('/:post_id', authMiddleware, async (req, res) => {
     const equalUser = await prisma.POST.findUnique({
       where: {
         post_id: +post_id,
-        user_id: +user_id
-      }
+        user_id: +user_id,
+      },
     });
-    if (!equalUser) { throw new Error("403-권한없음"); }
+
+    if (!equalUser) {
+      throw new Error('403-권한없음');
+    }
 
     // 게시글 수정
     const post = await prisma.POST.update({
       where: {
         post_id: +post_id,
-        user_id: 1,
       },
       data: {
         title: title,
@@ -129,16 +124,14 @@ router.put('/:post_id', authMiddleware, async (req, res) => {
     await prisma.$disconnect(); // prisma 연결 끊기
     res.status(201).json({ Message: '수정이 완료되었습니다~' });
   } catch (error) {
-
-    if (error.message === "400-제목미입력") {
-      res.status(400).json({ errorMessage: "제목을 입력해주세요." });
-    } else if (error.message === "400-내용미입력") {
-      res.status(400).json({ errorMessage: "내용을 입력해주세요." });
-    } else if (error.message === "403-권한없음") {
-      return res.status(404).json({ errorMessage: "권한이 없습니다." });
+    if (error.message === '400-제목미입력') {
+      res.status(400).json({ errorMessage: '제목을 입력해주세요.' });
+    } else if (error.message === '400-내용미입력') {
+      res.status(400).json({ errorMessage: '내용을 입력해주세요.' });
+    } else if (error.message === '403-권한없음') {
+      return res.status(404).json({ errorMessage: '권한이 없습니다.' });
     } else {
       console.log(error);
-
     }
   }
 });
@@ -164,32 +157,34 @@ router.delete('/:post_id', authMiddleware, async (req, res) => {
       );
     }
 
-
     // ERR 403 : 글 작성자가 아닌 경우
     const equalUser = await prisma.POST.findUnique({
       where: {
         post_id: +post_id,
-        user_id: +user_id
-      }
+        user_id: +user_id,
+      },
     });
-    if (!equalUser) { throw new Error("403-권한없음"); }
+    if (!equalUser) {
+      throw new Error('403-권한없음');
+    }
 
     const deletePost = await prisma.POST.delete({
       where: {
         // 회원 번호 식별 기능 미구현
-        post_id: +post_id
-      }
+        post_id: +post_id,
+      },
     });
-    return res.status(404).json({ errorMessage: "삭제가 완료되었습니다!" });
-
+    return res.status(404).json({ errorMessage: '삭제가 완료되었습니다!' });
   } catch (error) {
-    if (error.message === "404-게시글미존재") {
-      return res.status(404).json({ errorMessage: "게시글이 존재하지 않습니다." });
-    } else if (error.message === "403-권한없음") {
-      return res.status(404).json({ errorMessage: "권한이 없습니다." });
+    // 에러처리 수정해야함 - 수영
+    if (error.message === '404-게시글미존재') {
+      return res
+        .status(404)
+        .json({ errorMessage: '게시글이 존재하지 않습니다.' });
+    } else if (error.message === '403-권한없음') {
+      return res.status(404).json({ errorMessage: '권한이 없습니다.' });
     } else {
       console.log(error);
-
     }
   }
 });
