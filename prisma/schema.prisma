@@ -18,13 +18,15 @@ model USER {
   pw        String  @map("pw")
   created_at DateTime @default(now()) @map("created_at")
   updated_at DateTime @updatedAt @map("updated_at")
+  post     POST[]
 
   @@map("USER")
 }
 
 model POST {
   post_id    Int      @id @default(autoincrement()) @map("post_id")
-  user_id    Int      @map("user_id")
+  user       USER     @relation(fields: [user_id], references: [user_id])
+  user_id    Int
   title      String   @map("title")
   content    String   @map("content") @db.Text
   created_at DateTime @default(now()) @map("created_at")
@@ -32,3 +34,4 @@ model POST {
 
   @@map("POST")
 }
+
