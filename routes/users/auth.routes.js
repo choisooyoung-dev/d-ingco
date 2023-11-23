@@ -58,7 +58,7 @@ router.post('/login', async (req, res, next) => {
 // LOGOUT
 router.get('/logout', authMiddleware, async (req, res, next) => {
   try {
-    res.clearCookie('Authorization');
+    res.clearCookie('authorization');
     res.status(200).json({ message: '로그아웃 성공' });
   } catch (error) {
     console.log(error);
