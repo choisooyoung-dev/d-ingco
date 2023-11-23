@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const { title, content } = req.body; // body 값 조회
-    const { user_id } = res.locals.user[0];
+    const { user_id } = res.locals.user[0]; // user_id 조회
 
     // ERR 400 : 제목 미입력
     if (!title) { throw new Error("400-제목미입력"); }
@@ -82,8 +82,7 @@ router.get('/:post_id', async (req, res) => {
 // 게시글 수정
 router.put('/:post_id', authMiddleware, async (req, res) => {
   try {
-    // 게시글 번호, 사용자 번호 필요, 사용자 인증이 일치할 경우에 업데이트
-    // 근데 애초에 사용자 본인이 아닐 경우엔 수정하기 버튼을 비활성화 해야 할 것으로 생각됨
+    const { user_id } = res.locals.user[0]; // user_id 조회
     const { post_id } = req.params;
     const { title, content } = req.body; // body 값 조회
     // ERR 400 : 제목 미입력
@@ -94,11 +93,20 @@ router.put('/:post_id', authMiddleware, async (req, res) => {
     if (!content) {
       throw new Error("400-내용미입력");
     }
+
+    // ERR 403 : 글 작성자가 아닌 경우
+    const equalUser = await prisma.POST.findUnique({
+      where: {
+        post_id: +post_id,
+        user_id: +user_id
+      }
+    });
+    if (!equalUser) { throw new Error("403-권한없음"); }
+
     // 게시글 수정
     const post = await prisma.POST.update({
       where: {
         post_id: +post_id,
-        user_id: 1
       },
       data: {
         title: title,
@@ -110,11 +118,14 @@ router.put('/:post_id', authMiddleware, async (req, res) => {
     await prisma.$disconnect(); // prisma 연결 끊기
     res.status(201).json({ Message: "수정이 완료되었습니다~" });
   } catch (error) {
-    console.log(error);
     if (error.message === "400-제목미입력") {
       res.status(400).json({ errorMessage: "제목을 입력해주세요." });
     } else if (error.message === "400-내용미입력") {
       res.status(400).json({ errorMessage: "내용을 입력해주세요." });
+    } else if (error.message === "403-권한없음") {
+      return res.status(404).json({ errorMessage: "권한이 없습니다." });
+    } else {
+      console.log(error);
     }
   }
 });
@@ -122,31 +133,40 @@ router.put('/:post_id', authMiddleware, async (req, res) => {
 // 게시글 삭제
 router.delete('/:post_id', authMiddleware, async (req, res) => {
   try {
+    const { user_id } = res.locals.user[0]; // user_id 조회
     const { post_id } = req.params;
-    console.log('post_id: ', post_id);
-
-    // ERR 404 : 게시글이 없을 경우(없을 수 없긴 한데 만들어두자)
+    // ERR 404 : 게시글이 없을 경우(없을 수 없긴 한데 만들어두자) 아무리 생각해도 안쓸듯?
     const post = await prisma.POST.findUnique({
       where: {
         post_id: +post_id
       }
     });
-    if (!post) {
-      throw new Error("404-게시글미존재");
-    }
+    if (!post) { throw new Error("404-게시글미존재"); }
 
-    const deleteUser = await prisma.POST.delete({
+    // ERR 403 : 글 작성자가 아닌 경우
+    const equalUser = await prisma.POST.findUnique({
       where: {
-        // 회원 번호 식별 기능 미구현
         post_id: +post_id,
-        user_id: 1
+        user_id: +user_id
       }
     });
-    console.log('deleteUser: ', deleteUser);
+    if (!equalUser) { throw new Error("403-권한없음"); }
+
+    const deletePost = await prisma.POST.delete({
+      where: {
+        // 회원 번호 식별 기능 미구현
+        post_id: +post_id
+      }
+    });
+    return res.status(404).json({ errorMessage: "삭제가 완료되었습니다!" });
+
   } catch (error) {
-    console.log(error);
     if (error.message === "404-게시글미존재") {
       return res.status(404).json({ errorMessage: "게시글이 존재하지 않습니다." });
+    } else if (error.message === "403-권한없음") {
+      return res.status(404).json({ errorMessage: "권한이 없습니다." });
+    } else {
+      console.log(error);
     }
   }
 });
