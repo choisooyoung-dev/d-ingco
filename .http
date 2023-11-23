@@ -34,9 +34,8 @@ POST http://localhost:3000/api/posts
 content-type: application/json
 
 {
-    "user_id":"1",
-    "title":"title6",
-    "content": "content6"
+    "title":"t2222",
+    "content": "co22222t6"
 } 
 
 ###
