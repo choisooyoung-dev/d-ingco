@@ -5,7 +5,6 @@ const prisma = new PrismaClient();
 require('dotenv').config();
 
 module.exports = async (req, res, next) => {
-  console.log(process.env.PRIVATE_KEY);
   try {
     const { authorization } = req.cookies;
     // console.log(req.cookies);
