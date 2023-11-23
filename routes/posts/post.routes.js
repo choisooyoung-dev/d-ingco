@@ -9,30 +9,20 @@ const prisma = new PrismaClient();
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const { title, content } = req.body; // body 값 조회
-    // 게시글에 저장할 회원의 번호 조회
-    const { authorization } = req.cookies; // cookie 값 조회
-    const [authType, authToken] = (authorization ?? "").split(" ");
-    const { user_name } = jwt.verify(authToken, "dingco-secret-key");
-    const user = await prisma.USER.findUnique({
-      select: { user_id: true },
-      where: { user_name }
-    });
-    const user_id = user.user_id;
-
-    // 쿠키 날리는 기능이 있어야 할 것 같은딩
-    // 쿠키에 있는 user_name 값 조회한 후 user_id 출력하기
+    const { user_id } = res.locals.user[0];
 
     // ERR 400 : 제목 미입력
     if (!title) { throw new Error("400-제목미입력"); }
     // ERR 400 : 내용 미입력
     if (!content) { throw new Error("400-내용미입력"); }
+
     // 회원 번호 저장 미구현
     // user_id가 외래키로 설정되었기 때문에 게시글을 저장할 때 입력된 user_id 값이 USER 테이블에 값이 없을 경우 오류가 발생함
     const post = await prisma.POST.create({
       data: {
         user_id: user_id,
         title: title,
-        content: content,
+        content: content
       }
     });
 
