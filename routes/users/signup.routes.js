@@ -4,95 +4,71 @@ const bodyParser = require('body-parser'); // [이아영] body값 조회 패키�
 const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 패키지
 const prisma = new PrismaClient();
 const bcrypt = require('bcrypt'); // [이아영] 암호 해시화 패키지
+const { CustomError, ErrorTypes } = require('../../lib/error.handler');
 
 // 회원 정보 저장(CREATE)
 
 router.post('/signup', async (req, res) => {
-  console.log('SIGNUP ROUTER');
-
-  const { sign_username, sign_password, sign_name, sign_email } = req.body; // body 값 조회
-  // console.log(
-  //   'sign_username, sign_password, sign_name, sign_email: ',
-  //   sign_username,
-  //   sign_password,
-  //   sign_name,
-  //   sign_email,
-  // );
+  // body 값 조회
+  const { name, user_name, email, pw, confirmPw } = req.body;
 
   try {
     // ERR 400 : 아이디 중복
     const existsUsername = await prisma.USER.findUnique({
-      where: { user_name: sign_username },
+      where: { user_name },
     });
 
-    if (existsUsername) {
-      throw new Error('400-아이디중복');
-    }
+    if (existsUsername)
+      throw new CustomError(
+        ErrorTypes.UserUsernameExistError,
+        '중복된 아이디 입니다.',
+      );
 
     // ERR 400 : 이메일 중복
     const existsEmail = await prisma.USER.findUnique({
-      where: { email: sign_email },
+      where: { email },
     });
-    if (existsEmail) {
-      throw new Error('400-이메일중복');
-    }
 
-    // ERR 400 : 비밀번호 불일치
-    // if (sign_password !== confirsign_password) { throw new Error("400-비밀번호불일치"); }
+    if (existsEmail)
+      throw new CustomError(
+        ErrorTypes.UserEmailExistError,
+        '중복된 이메일 입니다.',
+      );
 
-    // ERR 400 : 비밀번호 최소 길이 불충족
-    if (sign_password.length < 6) {
-      throw new Error('400-비밀번호길이');
-    }
+    if (pw !== confirmPw)
+      throw new CustomError(
+        ErrorTypes.UserConfirmPwMismatchError,
+        '똑같은 비밀번호를 입력해주세요.',
+      );
+
+    if (pw.length < 6)
+      throw new CustomError(
+        ErrorTypes.UserPwLengthError,
+        '비밀번호는 6자 이상 작성해주세요.',
+      );
 
     const salt = await bcrypt.genSalt(12);
 
     // 저장 : 비밀번호 암호화
     // await bcrypt.hash(비밀번호, 길이); : 비밀번호를 암호화
-    const new_sign_password = await bcrypt.hash(sign_password, salt);
+    const new_sign_password = await bcrypt.hash(pw, salt);
     // 저장 : 회원정보
     const createUser = async () => {
       const user = await prisma.USER.create({
         data: {
-          user_name: sign_username,
+          user_name,
           pw: new_sign_password,
-          name: sign_name,
-          email: sign_email,
+          name,
+          email,
         },
       });
       return user;
     };
     await createUser();
     await prisma.$disconnect();
-    res
-      .status(201)
-      .json({ user_info: { sign_username, sign_name, sign_email } });
+    res.status(201).json({ user_info: { user_name, name, email } });
   } catch (error) {
-    console.log(error);
-    // SequelizeValidationError : Models의 유효성 검사 에러
-    if (error.name === 'SequelizeValidationError') {
-      const validationErrors = error.errors.map((err) =>
-        err.message.replace('Validation error: ', ''),
-      );
-      return res.status(400).json({ errorMessage: validationErrors });
-    } else if (error.message === '400-아이디중복') {
-      return res
-        .status(400)
-        .json({ errorMessage: '이미 등록된 아이디입니다.' });
-    } else if (error.message === '400-이메일중복') {
-      return res
-        .status(400)
-        .json({ errorMessage: '이미 등록된 이메일입니다.' });
-    } else if (error.message === '400-비밀번호불일치') {
-      return res.status(400).json({
-        errorMessage:
-          '비밀번호와 비밀번호 확인에 입력한 값이 일치하지 않습니다.',
-      });
-    } else if (error.message === '400-비밀번호길이') {
-      return res
-        .status(400)
-        .json({ errorMessage: '비밀번호는 6자 이상 입력해주세요.' });
-    }
+    return res.status(401).json({ message: error.message });
   }
 });
 
