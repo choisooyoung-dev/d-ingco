@@ -5,10 +5,11 @@ POST http://localhost:3000/api/users/signup
 content-type: application/json
 
 {
-    "sign_username": "test3",
-    "sign_password": "123456",
-    "sign_name": "test3",
-    "sign_email": "test3@naver.com"
+    "username": "test3",
+    "password": "123456",
+    "confirmPassword": "123456",
+    "name": "test3",
+    "email": "test3@naver.com"
 } 
 
 ###
@@ -27,6 +28,23 @@ content-type: application/json
 
 GET http://localhost:3000/api/users/logout
 
+###
+# 내정보 조회
+
+GET 
+###
+# 내 정보 수정
+PUT http://localhost:3000/api/users/3
+content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX25hbWUiOiJ0ZXN0MyIsImlhdCI6MTcwMDc0OTk0MSwiZXhwIjoxNzAwNzkzMTQxfQ.88g86mRb1MmHsJ6E389UBelDUDBljQzSQuagPWoPvf4
+
+{
+    "user_name": "test1",  
+    "name": "test1",
+    "email": "test1@naver.com"
+} 
+
+
 ##### 게시글 - 이아영
 ###
 # 게시글 저장
@@ -34,7 +52,7 @@ POST http://localhost:3000/api/posts
 content-type: application/json
 
 {
-    "title":"t2222",
+    "title":"1234567",
     "content": "co22222t6"
 } 
 
