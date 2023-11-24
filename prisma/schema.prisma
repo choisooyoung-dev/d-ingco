@@ -18,7 +18,8 @@ model USER {
   pw        String  @map("pw")
   created_at DateTime @default(now()) @map("created_at")
   updated_at DateTime @updatedAt @map("updated_at")
-  post     POST[]
+  post      POST[]
+  comment   COMMENT[]      
 
   @@map("USER")
 }
@@ -31,7 +32,20 @@ model POST {
   content    String   @map("content") @db.Text
   created_at DateTime @default(now()) @map("created_at")
   updated_at DateTime @updatedAt @map("updated_at")
+  comment   COMMENT[] 
 
   @@map("POST")
 }
 
+model COMMENT {
+  comment_id      Int       @id @default(autoincrement()) @map("comment_id")
+  post            POST      @relation(fields: [post_id], references: [post_id])
+  post_id         Int      
+  user            USER      @relation(fields: [user_id], references: [user_id])
+  user_id         Int
+  comment_content String    @map("comment_content") @db.Text
+  created_at      DateTime  @default(now()) @map("created_at")
+  updated_at      DateTime  @updatedAt @map("updated_at")
+
+  @@map("COMMENT")
+}
