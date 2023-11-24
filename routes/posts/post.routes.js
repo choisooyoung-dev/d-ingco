@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../../middlewares/auth.middleware.js');
-const jwt = require("jsonwebtoken");
 const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 패키지
 const prisma = new PrismaClient();
 
@@ -18,7 +17,7 @@ router.post('/', authMiddleware, async (req, res) => {
 
     // 회원 번호 저장 미구현
     // user_id가 외래키로 설정되었기 때문에 게시글을 저장할 때 입력된 user_id 값이 USER 테이블에 값이 없을 경우 오류가 발생함
-    const post = await prisma.POST.create({
+    await prisma.POST.create({
       data: {
         user_id: user_id,
         title: title,
@@ -38,29 +37,49 @@ router.post('/', authMiddleware, async (req, res) => {
   }
 });
 
-// 게시글 전체 조회
+// 게시글 전체 조회 (git push 할 때 정혁님 코드 다시 활성화 하기)
 router.get('/', async (req, res) => {
-  const posts = await prisma.POST.findMany({
-    select: {
-      user_id: true,
-      title: true,
-      content: true,
-      created_at: true,
-      updated_at: true,
-    },
-  });
+  try {
+    const posts = await prisma.POST.findMany({
+      select: {
+        post_id: true,
+        title: true,
+        content: true,
+        created_at: true,
+        updated_at: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+    });
 
-  if (posts.lenth == 0)
-    return res.status(400).json({ errorMessage: '전체 조회에 실패했습니다.' });
-
-  return res.status(200).json({ data: posts });
+    if (!posts || posts.lenth == 0) {
+      throw new Error('전체 조회에 실패했습니다.');
+    }
+    return res.status(200).json(posts);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ errorMessage: error.message });
+  }
 });
 
 // 게시글 상세 조회
 router.get('/:post_id', async (req, res) => {
   try {
     const { post_id } = req.params;
-    const post = await prisma.POST.findUnique({
+    const post = await prisma.POST.findMany({
+      select: {
+        post_id: true,
+        title: true,
+        content: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
       where: {
         post_id: +post_id
       }
@@ -102,7 +121,7 @@ router.put('/:post_id', authMiddleware, async (req, res) => {
     if (!equalUser) { throw new Error("403-권한없음"); }
 
     // 게시글 수정
-    const post = await prisma.POST.update({
+    await prisma.POST.update({
       where: {
         post_id: +post_id,
       },
@@ -150,13 +169,13 @@ router.delete('/:post_id', authMiddleware, async (req, res) => {
     });
     if (!equalUser) { throw new Error("403-권한없음"); }
 
-    const deletePost = await prisma.POST.delete({
+    await prisma.POST.delete({
       where: {
         // 회원 번호 식별 기능 미구현
         post_id: +post_id
       }
     });
-    return res.status(404).json({ errorMessage: "삭제가 완료되었습니다!" });
+    res.status(200).json({ errorMessage: "삭제가 완료되었습니다!" });
 
   } catch (error) {
     if (error.message === "404-게시글미존재") {
