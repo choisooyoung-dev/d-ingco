@@ -8,6 +8,7 @@ const authRouter = require('./routes/users/auth.routes.js');
 const signupRouter = require('./routes/users/signup.routes.js');
 const postRouter = require('./routes/posts/post.routes.js');
 const infoRouter = require('./routes/users/info.routes.js');
+const { ErrorHandler } = require('./middlewares/Error.handler.js');
 
 app.set('port', process.env.PORT || 3000);
 
@@ -19,11 +20,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // app.use('/api', express.static(__dirname + '/views')); // [이아영] views/ 파일들 조회
 
-app.use('/api/users', authRouter);
 app.use('/api/users', signupRouter);
+app.use('/api/users', authRouter);
 app.use('/api/users', infoRouter);
 app.use('/api/posts', postRouter);
-
+app.use(ErrorHandler);
 
 // 서버 실행
 app.listen(app.get('port'), () => {
