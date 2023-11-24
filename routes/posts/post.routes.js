@@ -40,8 +40,6 @@ router.post('/', authMiddleware, postValidate, async (req, res, next) => {
   }
 });
 
-// 게시글 전체조회 에러처리 필요 - 수영
-
 // 게시글 전체 조회
 router.get('/', async (req, res, next) => {
   try {
@@ -61,12 +59,14 @@ router.get('/', async (req, res, next) => {
     });
 
     if (!posts || posts.lenth == 0) {
-      throw new Error('전체 조회에 실패했습니다.');
+      const error = new Error('전체 조회에 실패했습니다.');
+      throw error;
     }
     return res.status(200).json(posts);
   } catch (error) {
     console.log(error);
-    res.status(400).json({ errorMessage: error.message });
+    //res.status(400).json({ errorMessage: error.message });
+    next(error);
   }
 });
 
@@ -127,8 +127,8 @@ router.put(
           // 수정 시간만 업데이트 되기 기능 추가 필요한데
           // 다른 기능들 만들고 오자..ㅜ
           title: title,
-          content: content
-        }
+          content: content,
+        },
       });
 
       // ERR 403 : 글 작성자가 아닌 경우
@@ -172,8 +172,6 @@ router.delete('/:post_id', authMiddleware, async (req, res, next) => {
     const { user_id } = res.locals.user[0]; // user_id 조회
     const { post_id } = req.params;
 
-    // ERR 404 : 게시글이 없을 경우(없을 수 없긴 한데 만들어두자) 아무리 생각해도 안쓸듯?
-
     const post = await prisma.POST.findUnique({
       where: {
         post_id: +post_id,
@@ -203,8 +201,7 @@ router.delete('/:post_id', authMiddleware, async (req, res, next) => {
         post_id: +post_id,
       },
     });
-    res.status(200).json({ errorMessage: "삭제가 완료되었습니다!" });
-
+    res.status(200).json({ errorMessage: '삭제가 완료되었습니다!' });
   } catch (error) {
     console.log(error);
     next(error);
