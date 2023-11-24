@@ -12,10 +12,10 @@ datasource db {
 
 model USER {
   user_id   Int     @id @default(autoincrement()) @map("user_id")
-  user_name String  @unique @map("user_name")
+  username String  @unique @map("username")
   name      String  @map("name")
   email     String  @unique @map("email")
-  pw        String  @map("pw")
+  password        String  @map("password")
   created_at DateTime @default(now()) @map("created_at")
   updated_at DateTime @updatedAt @map("updated_at")
   post     POST[]

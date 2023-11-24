@@ -5,16 +5,16 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 // 내 정보 조회 API
-router.get('/:userId', async (req, res) => {
-  const userId = req.params.userId;
+router.get('/:user_id', async (req, res) => {
+  const user_id = req.params.user_id;
   const user = await prisma.USER.findUnique({
     select: {
-      user_name: true,
+      username: true,
       name: true,
       created_at: true,
       updated_at: true,
     },
-    where: { user_id: Number(userId) },
+    where: { user_id: user_id },
   });
 
   if (user) return res.status(200).json({ data: user });
