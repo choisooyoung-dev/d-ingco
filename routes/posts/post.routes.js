@@ -17,7 +17,7 @@ router.post('/', authMiddleware, postValidate, async (req, res, next) => {
   try {
     const { title, content } = req.body; // body 값 조회
     const { user_id } = res.locals.user[0]; // user_id 조회
-    console.log(user_id);
+    // console.log(user_id);
     if (!errors.isEmpty()) {
       const error = new ValidError();
       throw error;
@@ -41,6 +41,8 @@ router.post('/', authMiddleware, postValidate, async (req, res, next) => {
   }
 });
 
+// 게시글 전체조회 에러처리 필요 - 수영
+
 // 게시글 전체 조회
 router.get('/', async (req, res) => {
   const posts = await prisma.POST.findMany({
@@ -53,14 +55,14 @@ router.get('/', async (req, res) => {
     },
   });
 
-  if (posts.lenth == 0)
+  if (posts.lenth == 0) {
     return res.status(400).json({ errorMessage: '전체 조회에 실패했습니다.' });
-
+  }
   return res.status(200).json({ data: posts });
 });
 
 // 게시글 상세 조회
-router.get('/:post_id', async (req, res) => {
+router.get('/:post_id', async (req, res, next) => {
   try {
     const { post_id } = req.params;
     const post = await prisma.POST.findUnique({
@@ -69,15 +71,14 @@ router.get('/:post_id', async (req, res) => {
       },
     });
     if (!post) {
-      throw new CustomError(
-        ErrorTypes.PostNotExistError,
-        '게시글이 존재하지 않습니다.',
-      );
+      const error = new CustomError(ErrorTypes.PostNotExistError);
+      throw error;
     }
     res.status(200).json({ post });
   } catch (error) {
     console.log(error);
-    return res.status(404).json({ message: error.message });
+    // return res.status(404).json({ message: error.message });
+    next(error);
   }
 });
 
