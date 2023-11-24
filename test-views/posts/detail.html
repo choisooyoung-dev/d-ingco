@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="detail-container">
+      <h2>게시글 조회하기</h2>
+      <div id="post_detail"></div>
+      <!-- <button type="button" onclick="submitEditForm()">수정하기</button> -->
+    </div>
+  </body>
+  <!-- 프론트 비동기처리(?)-->
+  <!-- 프론트에서 백으로 데이터 넘겨주기!-->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+    // 브라우저가 열렸을 때 실행
+    document.addEventListener('DOMContentLoaded', function () {
+      // 쿼리 스트링 post_id 받아오기
+      const urlParams = new URLSearchParams(window.location.search);
+      const post_id = urlParams.get('post_id');
+      const $post_detail = document.getElementById('post_detail');
+
+      axios
+        .get(`http://localhost:3000/api/posts/${post_id}`)
+        .then((response) => {
+          console.log('response: ', response);
+          // API 실행결과를 response로 받아와서 html 그려주기
+          response.data.post.forEach((e) => {
+            let temp_html = `
+            <div>
+            <span>제목 :</span>
+              <div id="title">${e.title}</div>
+              <span>내용 : </span>
+              <div id="content">${e.content}</div>
+              <div>작성자 이름 : ${e.user.username}</div>
+            </div>
+            <div>
+              <a href="http://localhost:5501/test-views/posts/edit.html?post_id=${post_id}">수정하기</a>
+              <button type="button" onclick="submitDeleteForm()">삭제하기</button>
+            </div>
+              `;
+            $post_detail.insertAdjacentHTML('beforeend', temp_html);
+          });
+        })
+        .catch((error) => {
+          console.error('오류 발생:', error);
+        });
+    });
+
+    function submitDeleteForm() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const post_id = urlParams.get('post_id');
+      axios
+        .delete(`http://localhost:3000/api/posts/${post_id}`, {
+          withCredentials: true,
+        })
+        .then((response) => {
+          // 메인페이지로 이동시키기!
+          // 내 글 조회 화면이 구현될 경우 해당 화면으로 이동시키기
+          alert('삭제가 완료되었습니다.');
+          window.location.href = 'http://localhost:5501/test-index.html';
+        })
+        .catch((error) => {
+          console.error('오류 발생:', error);
+        });
+    }
+  </script>
+</html>
