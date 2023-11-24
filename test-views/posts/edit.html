@@ -26,13 +26,16 @@
     <!-- 프론트에서 백으로 데이터 넘겨주기!-->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        // 쿼리 스트링 post_id 받아오기
-        const urlParams = new URLSearchParams(window.location.search);
-        const post_id = urlParams.get('post_id');
-        const $post_title = document.getElementById('title');
-        const $post_content = document.getElementById('content');
+      // 쿼리 스트링 post_id 받아오기
+      const urlParams = new URLSearchParams(window.location.search);
+      const post_id = urlParams.get('post_id');
 
+      // DOM 요소들
+      const $post_title = document.getElementById('title');
+      const $post_content = document.getElementById('content');
+
+      // 페이지가 열렸을 때 게시글 내용 조회
+      document.addEventListener('DOMContentLoaded', function () {
         axios
           .get(`http://localhost:3000/api/posts/${post_id}`)
           .then((response) => {
@@ -47,30 +50,29 @@
             console.error('오류 발생:', error);
           });
       });
-      function submitSaveForm() {
-        const title = document.getElementById('title').value;
-        const content = document.getElementById('content').value;
 
-        // URLSearchParams() : URL 쿼리 문자열을 다루는 내장 클래스
-        const params = new URLSearchParams();
-        params.append('title', title);
-        params.append('content', content);
+      // 저장하기 버튼을 눌렀을 때 게시글 저장
+      function submitSaveForm() {
+        const $title_value = document.getElementById('title').value;
+        const $content_value = document.getElementById('content').value;
+        urlParams.append('title', $title_value);
+        urlParams.append('content', $content_value);
 
         axios
-          .post('http://localhost:3000/api/posts', params, {
+          .post('http://localhost:3000/api/posts', urlParams, {
             withCredentials: true,
           })
           .then((response) => {
             // 게시글 조회 화면으로 이동시키기!
             alert('저장이 완료되었습니다.');
-            window.location.href =
-              'http://localhost:5501/test-views/posts/detail.html';
+            window.location.href = `http://localhost:5500/test-views/posts/detail.html?post_id=${post_id}`;
           })
           .catch((error) => {
             console.error('오류 발생:', error);
           });
       }
 
+      // 수정하기 버튼을 눌렀을 때 게시글 수정
       function submitEditForm() {
         // 쿼리 스트링 post_id 받아오기
         const urlParams = new URLSearchParams(window.location.search);
@@ -90,8 +92,7 @@
           .then((response) => {
             // 게시글 조회 화면으로 이동시키기!
             alert('수정이 완료되었습니다.');
-            window.location.href =
-              'http://localhost:5501/test-views/posts/detail.html';
+            window.location.href = `http://localhost:5500/test-views/posts/detail.html?post_id=${post_id}`;
           })
           .catch((error) => {
             console.error('오류 발생:', error);
