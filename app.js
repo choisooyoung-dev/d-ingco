@@ -13,7 +13,7 @@ const { ErrorHandler } = require('./middlewares/Error.handler.js');
 app.set('port', process.env.PORT || 3000);
 
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: ['http://localhost:5501'] }));
+app.use(cors({ credentials: true, origin: ['http://localhost:5500'] }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
