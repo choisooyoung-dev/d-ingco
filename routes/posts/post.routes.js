@@ -2,22 +2,25 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../../middlewares/auth.middleware.js');
 const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 패키지
-const { CustomError, ErrorTypes } = require('../../lib/error.handler.js');
+const {
+  CustomError,
+  ErrorTypes,
+  ValidError,
+} = require('../../lib/CustomError.js');
+const { postValidate } = require('../../middlewares/validator.js');
+const { validationResult } = require('express-validator');
 const prisma = new PrismaClient();
 
 // 게시글 저장
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, postValidate, async (req, res, next) => {
+  const errors = validationResult(req);
   try {
     const { title, content } = req.body; // body 값 조회
     const { user_id } = res.locals.user[0]; // user_id 조회
-
-    // ERR 400 : 제목 미입력
-    if (!title) {
-      throw new Error('400-제목미입력');
-    }
-    // ERR 400 : 내용 미입력
-    if (!content) {
-      throw new Error('400-내용미입력');
+    console.log(user_id);
+    if (!errors.isEmpty()) {
+      const error = new ValidError();
+      throw error;
     }
 
     // 회원 번호 저장 미구현
@@ -33,12 +36,8 @@ router.post('/', authMiddleware, async (req, res) => {
     await prisma.$disconnect(); // prisma 연결 끊기
     res.status(201).json({ Message: '게시글 저장이 완료되었습니다~' });
   } catch (error) {
-    console.log(error);
-    if (error.message === '400-제목미입력') {
-      res.status(400).json({ errorMessage: '제목을 입력해주세요.' });
-    } else if (error.message === '400-내용미입력') {
-      res.status(400).json({ errorMessage: '내용을 입력해주세요.' });
-    }
+    // console.log(error);
+    next(error);
   }
 });
 
@@ -83,58 +82,55 @@ router.get('/:post_id', async (req, res) => {
 });
 
 // 게시글 수정
-router.put('/:post_id', authMiddleware, async (req, res) => {
-  try {
-    const { user_id } = res.locals.user[0]; // user_id 조회
-    const { post_id } = req.params;
-    const { title, content } = req.body; // body 값 조회
-    // ERR 400 : 제목 미입력
-    if (!title) {
-      throw new Error('400-제목미입력');
-    }
-    // ERR 400 : 내용 미입력
-    if (!content) {
-      throw new Error('400-내용미입력');
-    }
+router.put(
+  '/:post_id',
+  authMiddleware,
+  postValidate,
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    try {
+      const { user_id } = res.locals.user[0]; // user_id 조회
+      const { post_id } = req.params;
+      const { title, content } = req.body; // body 값 조회
 
-    // ERR 403 : 글 작성자가 아닌 경우
-    const equalUser = await prisma.POST.findUnique({
-      where: {
-        post_id: +post_id,
-        user_id: +user_id,
-      },
-    });
+      if (!errors.isEmpty()) {
+        const error = new ValidError();
+        throw error;
+      }
 
-    if (!equalUser) {
-      throw new Error('403-권한없음');
-    }
+      // ERR 403 : 글 작성자가 아닌 경우
+      const equalUser = await prisma.POST.findUnique({
+        where: {
+          post_id: +post_id,
+          user_id: +user_id,
+        },
+      });
 
-    // 게시글 수정
-    const post = await prisma.POST.update({
-      where: {
-        post_id: +post_id,
-      },
-      data: {
-        title: title,
-        content: content,
-        // 수정 시간만 업데이트 되기 기능 추가 필요한데
-        // 다른 기능들 만들고 오자..ㅜ
-      },
-    });
-    await prisma.$disconnect(); // prisma 연결 끊기
-    res.status(201).json({ Message: '수정이 완료되었습니다~' });
-  } catch (error) {
-    if (error.message === '400-제목미입력') {
-      res.status(400).json({ errorMessage: '제목을 입력해주세요.' });
-    } else if (error.message === '400-내용미입력') {
-      res.status(400).json({ errorMessage: '내용을 입력해주세요.' });
-    } else if (error.message === '403-권한없음') {
-      return res.status(404).json({ errorMessage: '권한이 없습니다.' });
-    } else {
+      if (!equalUser) {
+        const error = new CustomError(ErrorTypes.TokenUserDoesNotExistError);
+        throw error;
+      }
+
+      // 게시글 수정
+      const post = await prisma.POST.update({
+        where: {
+          post_id: +post_id,
+        },
+        data: {
+          title: title,
+          content: content,
+          // 수정 시간만 업데이트 되기 기능 추가 필요한데
+          // 다른 기능들 만들고 오자..ㅜ
+        },
+      });
+      await prisma.$disconnect(); // prisma 연결 끊기
+      res.status(201).json({ Message: '수정이 완료되었습니다~' });
+    } catch (error) {
       console.log(error);
+      next(error);
     }
-  }
-});
+  },
+);
 
 // 게시글 삭제
 router.delete('/:post_id', authMiddleware, async (req, res) => {
@@ -151,10 +147,8 @@ router.delete('/:post_id', authMiddleware, async (req, res) => {
     });
 
     if (!post) {
-      throw new CustomError(
-        ErrorTypes.PostNotExistError,
-        '게시글이 존재하지 않습니다.',
-      );
+      const error = new CustomError(ErrorTypes.PostNotExistError);
+      throw error;
     }
 
     // ERR 403 : 글 작성자가 아닌 경우
@@ -165,7 +159,8 @@ router.delete('/:post_id', authMiddleware, async (req, res) => {
       },
     });
     if (!equalUser) {
-      throw new Error('403-권한없음');
+      const error = new CustomError(ErrorTypes.TokenUserDoesNotExistError);
+      throw error;
     }
 
     const deletePost = await prisma.POST.delete({
@@ -176,16 +171,8 @@ router.delete('/:post_id', authMiddleware, async (req, res) => {
     });
     return res.status(404).json({ errorMessage: '삭제가 완료되었습니다!' });
   } catch (error) {
-    // 에러처리 수정해야함 - 수영
-    if (error.message === '404-게시글미존재') {
-      return res
-        .status(404)
-        .json({ errorMessage: '게시글이 존재하지 않습니다.' });
-    } else if (error.message === '403-권한없음') {
-      return res.status(404).json({ errorMessage: '권한이 없습니다.' });
-    } else {
-      console.log(error);
-    }
+    console.log(error);
+    next(error);
   }
 });
 
