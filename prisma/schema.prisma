@@ -11,15 +11,15 @@ datasource db {
 }
 
 model USER {
-  user_id    Int       @id @default(autoincrement()) @map("user_id")
-  user_name  String    @unique @map("user_name")
-  name       String    @map("name")
-  email      String    @unique @map("email")
-  pw         String    @map("pw")
-  created_at DateTime  @default(now()) @map("created_at")
-  updated_at DateTime  @updatedAt @map("updated_at")
-  comment    COMMENT[]
-  post       POST[]
+  user_id   Int     @id @default(autoincrement()) @map("user_id")
+  username  String  @unique @map("username")
+  name      String  @map("name")
+  email     String  @unique @map("email")
+  password  String  @map("password")
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @updatedAt @map("updated_at")
+  comment   COMMENT[]
+  post      POST[]
 
   @@map("USER")
 }
@@ -27,13 +27,12 @@ model USER {
 model POST {
   post_id    Int       @id @default(autoincrement()) @map("post_id")
   user_id    Int
-  title      String    @map("title")
-  content    String    @map("content") @db.Text
-  created_at DateTime  @default(now()) @map("created_at")
-  updated_at DateTime  @updatedAt @map("updated_at")
+  title      String   @map("title")
+  content    String   @map("content") @db.Text
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @updatedAt @map("updated_at")
   comment    COMMENT[]
   user       USER      @relation(fields: [user_id], references: [user_id])
-
   @@index([user_id], map: "POST_user_id_fkey")
   @@map("POST")
 }

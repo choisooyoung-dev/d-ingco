@@ -21,13 +21,15 @@
         <div class="logo"></div>
         <ul class="menu">
           <li class="login_btn show">
-            <a href="/views/users/login.html">로그인</a>
+            <a href="/test-views/users/login.html">로그인</a>
           </li>
           <li class="login_btn show">
-            <a href="/views/users/signup.html">회원가입</a>
+            <a href="/test-views/users/signup.html">회원가입</a>
           </li>
           <li class="my_posts"><a href="/products/:usersid">내 글</a></li>
-          <li class="logout_btn"><a href="/users/logout">로그아웃</a></li>
+          <li class="logout_btn">
+            <button onclick="submitLogout()">로그아웃</button>
+          </li>
         </ul>
       </div>
     </nav>
@@ -35,17 +37,17 @@
     <section>
       <div id="post_list" class="row row-cols-1 row-cols-md-4 g-4">
         <!-- 
-        <div class="col">
+        <div id=post_"${e.post_id}" class="col">
+          <strong>
+            <a href="http://localhost:5501/test-views/posts/detail.html?post_id=${e.post_id}">div에 href 씌워야함</a>
+          </strong>
           <div class="card">
             <img src="..." class="card-img-top" alt="..." />
             <div class="card-body">
-              <h5 class="card-title">Card title</h5>
-              <p class="card-text">
-                This is a longer card with supporting text below as a natural
-                lead-in to additional content. This content is a little bit
-                longer.
-              </p>
+              <h5 class="card-title">게시글 제목</h5>
+              <p class="card-text">게시글 내용</p>
             </div>
+            <div class="card-body">작성자 이름</div>                  
           </div>
         </div> 
         -->
@@ -64,26 +66,28 @@
     <script>
       // 브라우저가 열렸을 때 실행
       document.addEventListener('DOMContentLoaded', function () {
+        console.log('document.cookie: ', document.cookie);
         const $post_list = document.getElementById('post_list');
-        // const user_id = document.getElementById('user_id').value
 
         axios
           .get('http://localhost:3000/api/posts')
           .then((response) => {
             // API 실행결과를 response로 받아와서 html 그려주기
+            console.log('response.data: ', response.data);
             response.data.forEach((e) => {
               let temp_html = `
-                <div class="col">
+                <div id=post_"${e.post_id}" class="col">
+                  <strong>
+                    <a href="http://localhost:5501/test-views/posts/detail.html?post_id=${e.post_id}">제발요${e.post_id}</a>
+                  </strong>
                   <div class="card">
                     <img src="..." class="card-img-top" alt="..." />
                     <div class="card-body">
                       <h5 class="card-title">${e.title}</h5>
-                      <p class="card-text">
-                        ${e.content}
-                      </p>
+                      <p class="card-text">${e.content}</p>
                     </div>
-                    <div>작성자 이름 : ${e.user.user_name}</div>                  
-                    </div>
+                    <div class="card-body">${e.user.username}</div>                  
+                  </div>
                 </div> 
               `;
               $post_list.insertAdjacentHTML('beforeend', temp_html);
@@ -93,6 +97,22 @@
             console.error('오류 발생:', error);
           });
       });
+
+      // 로그아웃을 눌렀을 때
+      function submitLogout() {
+        axios
+          .get(`http://localhost:3000/api/users/logout`, {
+            withCredentials: true,
+          })
+          .then((response) => {
+            // 페이지 갱신하기
+            alert('로그아웃되었습니다.');
+            window.location.reload();
+          })
+          .catch((error) => {
+            console.error('오류 발생:', error);
+          });
+      }
     </script>
   </body>
 </html>
