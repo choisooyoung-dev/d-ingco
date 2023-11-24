@@ -17,7 +17,7 @@ router.post('/signup', async (req, res) => {
     }
     // ERR 400 : 아이디 중복
     const existsUsername = await prisma.USER.findUnique({
-      where: { user_name: username },
+      where: { username: username },
     });
     if (existsUsername) { throw new Error('99-400-이미 등록된 아이디입니다.'); }
 
@@ -48,8 +48,8 @@ router.post('/signup', async (req, res) => {
     // 저장 : 회원정보
     const user = await prisma.USER.create({
       data: {
-        user_name: username,
-        pw: new_password,
+        username: username,
+        password: new_password,
         name: name,
         email: email,
       },
