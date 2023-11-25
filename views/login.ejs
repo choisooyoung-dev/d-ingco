@@ -1,13 +1,14 @@
 <section>
   <div class="login_wrap">
-    <form>
+    <form action="/api/users/login" method="post">
       <div class="row mb-3">
         <label for="inputEmail3" class="col-sm-2 col-form-label">아이디</label>
         <div class="col-sm-10">
           <input
             type="text"
             class="input_username form-control"
-            id="inputEmail3"
+            id="username"
+            name="username"
           />
         </div>
       </div>
@@ -19,12 +20,17 @@
           <input
             type="password"
             class="input_pw form-control"
-            id="inputPassword3"
+            id="password"
+            name="password"
           />
         </div>
       </div>
 
-      <button type="submit" class="login_submit_btn btn btn-outline-danger">
+      <button
+        id="loginBtn"
+        type="submit"
+        class="login_submit_btn btn btn-outline-danger"
+      >
         <a href="/api/users/login">로그인</a>
       </button>
     </form>

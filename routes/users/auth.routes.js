@@ -28,6 +28,10 @@ router.get('/login', async (req, res, next) => {
 router.post('/login', userLoginValidate, async (req, res, next) => {
   const errors = validationResult(req);
   try {
+    // const username = document.getElementById('username').value;
+    // const password = document.getElementById('password').value;
+    // console.log(username, password);
+    // console.log(req.params);
     const { username, password } = req.body; // body 값 조회
 
     // console.log(req.body);
@@ -35,7 +39,7 @@ router.post('/login', userLoginValidate, async (req, res, next) => {
     // id로 검색하고 pw 값 받아오기
     const user = await prisma.USER.findMany({
       where: {
-        username: username,
+        username,
       },
     });
     await prisma.$disconnect();
@@ -69,8 +73,8 @@ router.post('/login', userLoginValidate, async (req, res, next) => {
     });
     res.cookie('authorization', `Bearer ${token}`);
 
-    res.status(200).json({ token: token });
-    // res.redirect(200, 'http://localhost:5500/');
+    // res.status(200).json({ token: token });
+    res.redirect('/api/posts');
   } catch (error) {
     // return res.status(401).json({ message: error.message });
     console.log(error);
@@ -82,8 +86,8 @@ router.post('/login', userLoginValidate, async (req, res, next) => {
 router.get('/logout', authMiddleware, async (req, res, next) => {
   try {
     res.clearCookie('authorization');
-    res.status(200).json({ message: '로그아웃 성공' });
-    // res.redirect(200, 'http://localhost:5500/');
+    // res.status(200).json({ message: '로그아웃 성공' });
+    res.redirect('/api/posts');
   } catch (error) {
     console.log(error);
     next(error);
