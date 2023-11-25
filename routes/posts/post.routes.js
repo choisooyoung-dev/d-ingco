@@ -43,7 +43,6 @@ router.post('/', authMiddleware, postValidate, async (req, res, next) => {
 // 게시글 전체 조회
 router.get('/', async (req, res, next) => {
   try {
-    console.log(req.cookies);
     const posts = await prisma.POST.findMany({
       select: {
         post_id: true,
@@ -63,8 +62,20 @@ router.get('/', async (req, res, next) => {
       const error = new Error('전체 조회에 실패했습니다.');
       throw error;
     }
+
+    // render 관련
+    if (!req.cookies.authorization) {
+      res.render('index', {
+        data: posts,
+        user: '',
+        path: '/api/posts',
+      });
+    } else {
+      res.render('index', {
+        data: posts,
+      });
+    }
     //return res.status(200).json(posts);
-    res.render('index', posts);
   } catch (error) {
     console.log(error);
     //res.status(400).json({ errorMessage: error.message });
@@ -203,7 +214,7 @@ router.delete('/:post_id', authMiddleware, async (req, res, next) => {
         post_id: +post_id,
       },
     });
-    res.status(200).json({ errorMessage: '삭제가 완료되었습니다!' });
+    res.render(200, 'index').json({ errorMessage: '삭제가 완료되었습니다!' });
   } catch (error) {
     console.log(error);
     next(error);

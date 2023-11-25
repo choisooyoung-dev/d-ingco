@@ -1,11 +1,15 @@
 <header class="header">
   <h1 class="logo">
-    <a href="/layout"><i class="fa-solid fa-code"></i> D-ingco</a>
+    <a href="/api/posts"><i class="fa-solid fa-code"></i> D-ingco</a>
   </h1>
   <div class="contents_box">
-    <% if(req.cookies === null) {%>
-    <span class="header_btn login_btn"><a href="/login">로그인</a></span>
-    <span class="header_btn signup_btn"><a href="/signup">회원가입</a></span>
+    <% if(!user) {%>
+    <span class="header_btn login_btn"
+      ><a href="/api/users/login">로그인</a></span
+    >
+    <span class="header_btn signup_btn"
+      ><a href="/api/users//signup">회원가입</a></span
+    >
     <% } else { %>
     <span class="header_btn logout_btn"
       ><a href="/api/users/logout">로그아웃</a></span

@@ -12,6 +12,17 @@ const {
 const { userSignupValidate } = require('../../middlewares/validator');
 const { validationResult } = require('express-validator');
 
+router.get('/signup', async (req, res, next) => {
+  try {
+    res.render('index', {
+      path: '/api/users/signup',
+      user: '',
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 // 회원 정보 저장(CREATE)
 router.post('/signup', userSignupValidate, async (req, res, next) => {
   const errors = validationResult(req);

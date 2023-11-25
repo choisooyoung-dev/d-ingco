@@ -13,6 +13,17 @@ const {
 const { userLoginValidate } = require('../../middlewares/validator');
 const { validationResult } = require('express-validator');
 
+router.get('/login', async (req, res, next) => {
+  try {
+    res.render('index', {
+      path: '/api/users/login',
+      user: '',
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 // LOGIN
 router.post('/login', userLoginValidate, async (req, res, next) => {
   const errors = validationResult(req);
