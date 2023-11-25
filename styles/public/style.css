@@ -173,6 +173,7 @@ section {
 
 .login_wrap input {
   background: #242535;
+  color: #fff;
   border: 2px solid rgba(233, 52, 79, 0.3);
 }
 
