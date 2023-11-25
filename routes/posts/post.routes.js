@@ -42,6 +42,7 @@ router.post('/', authMiddleware, postValidate, async (req, res, next) => {
 
 // 게시글 전체 조회
 router.get('/', async (req, res, next) => {
+  console.log(req.params.post_id);
   try {
     const posts = await prisma.POST.findMany({
       select: {
@@ -73,8 +74,11 @@ router.get('/', async (req, res, next) => {
     } else {
       res.render('index', {
         data: posts,
+        user: 'login',
+        path: '/api/posts',
       });
     }
+
     //return res.status(200).json(posts);
   } catch (error) {
     console.log(error);
