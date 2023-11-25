@@ -1,36 +1,37 @@
 ##### 게시글 - 최수영
 ###
 # 회원가입
-POST http://localhost:3000/api/users/signup
+POST http://localhost:5500/api/users/signup
 content-type: application/json
 
 {
-    "sign_username": "test3",
-    "sign_password": "123456",
-    "sign_name": "test3",
-    "sign_email": "test3@naver.com"
+    "username": "test3",
+    "password": "123456",
+    "confirmPassword": "123456",
+    "name": "test3",
+    "email": "test3@naver.com"
 } 
 
 ###
 # 로그인
 
-POST http://localhost:3000/api/users/login
+POST http://localhost:5500/api/users/login
 content-type: application/json
 
 {
-    "user_name":"test3",
+    "username":"test3",
     "password": "123456"
 } 
 
 ###
 # 로그아웃
 
-GET http://localhost:3000/api/users/logout
+GET http://localhost:5500/api/users/logout
 
 ##### 게시글 - 이아영
 ###
 # 게시글 저장
-POST http://localhost:3000/api/posts
+POST http://localhost:5500/api/posts
 content-type: application/json
 
 {
@@ -40,15 +41,15 @@ content-type: application/json
 
 ###
 # 게시글 전체 조회
-GET http://localhost:3000/api/posts
+GET http://localhost:5500/api/posts
 
 ###
 # 게시글 상세 조회
-GET http://localhost:3000/api/posts/1
+GET http://localhost:5500/api/posts/1
 
 ### 
 # 게시글 수정
-PUT http://localhost:3000/api/posts/5
+PUT http://localhost:5500/api/posts/5
 content-type: application/json
 
 {
@@ -58,4 +59,4 @@ content-type: application/json
 
 ###
 # 게시글 삭제
-DELETE http://localhost:3000/api/posts/2
+DELETE http://localhost:500/api/posts/2

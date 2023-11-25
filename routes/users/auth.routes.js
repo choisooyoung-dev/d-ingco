@@ -59,6 +59,7 @@ router.post('/login', userLoginValidate, async (req, res, next) => {
     res.cookie('authorization', `Bearer ${token}`);
 
     res.status(200).json({ token: token });
+    // res.redirect(200, 'http://localhost:5500/');
   } catch (error) {
     // return res.status(401).json({ message: error.message });
     console.log(error);
@@ -71,8 +72,10 @@ router.get('/logout', authMiddleware, async (req, res, next) => {
   try {
     res.clearCookie('authorization');
     res.status(200).json({ message: '로그아웃 성공' });
+    // res.redirect(200, 'http://localhost:5500/');
   } catch (error) {
     console.log(error);
+    next(error);
   }
 });
 

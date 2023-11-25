@@ -43,6 +43,7 @@ router.post('/', authMiddleware, postValidate, async (req, res, next) => {
 // 게시글 전체 조회
 router.get('/', async (req, res, next) => {
   try {
+    console.log(req.cookies);
     const posts = await prisma.POST.findMany({
       select: {
         post_id: true,
@@ -62,7 +63,8 @@ router.get('/', async (req, res, next) => {
       const error = new Error('전체 조회에 실패했습니다.');
       throw error;
     }
-    return res.status(200).json(posts);
+    //return res.status(200).json(posts);
+    res.render('index', posts);
   } catch (error) {
     console.log(error);
     //res.status(400).json({ errorMessage: error.message });
