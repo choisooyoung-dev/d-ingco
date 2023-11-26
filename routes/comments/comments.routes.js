@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../../middlewares/auth.middleware.js');
 const { PrismaClient } = require('@prisma/client');
-const { CustomError, ErrorTypes } = require('../../lib/error.handler.js');
+const { CustomError, ErrorTypes } = require('../../middlewares/Error.handler.js');
 const prisma = new PrismaClient();
 
 // 댓글 생성
@@ -20,7 +20,7 @@ router.post('/:post_id/comments', authMiddleware, async (req, res) => {
       data: {
         post_id,
         user_id,
-        comment_name : commentUser.username,
+        comment_name: commentUser.username,
         comment_content,
       },
     });
