@@ -1,0 +1,133 @@
+<section class="detail_section">
+  <div class="detail_section_wrap">
+    <div class="detail_wrap">
+      <h1 class="detail_title"><%= data[0].title %></h1>
+      <div class="user_info">
+        <span class="author"><%= data[0].user.username %></span>
+      </div>
+      <p><%= data[0].content %></p>
+      <div class="post_btn_wrap">
+        <button
+          id="post_update_btn"
+          type="submit"
+          class="post_update_btn post_btn btn btn-outline-danger"
+        >
+          <a href="/api/users/login">수정하기</a>
+        </button>
+        <button
+          id="post_del_btn"
+          type="submit"
+          class="post_del_btn post_btn btn btn-outline-danger"
+        >
+          <a href="/api/users/login">삭제하기</a>
+        </button>
+      </div>
+    </div>
+
+    <br />
+    <br />
+    <div class="comment_wrap">
+      <div class="comment_form">
+        <form action="" method="post">
+          <label for="comment_form" class="col-sm-2 col-form-label">댓글</label>
+          <div class="col-sm-10">
+            <input
+              type="text"
+              class="input_pw form-control"
+              id="comment_content"
+              name="comment_content"
+            />
+          </div>
+        </form>
+        <button
+          id="comment_submit_btn"
+          type="submit"
+          class="comment_submit_btn post_btn btn btn-outline-danger"
+        >
+          <a href="/api/users/login">저장하기</a>
+        </button>
+      </div>
+      <div class="comment">
+        <h3 class="username">username</h3>
+        <span class="comment_content"
+          >aspects of traveling is immersing yourself in the local culture and
+          customs. This includes trying local cuisine, attending cultural events
+          and festivals, and interacting with locals. Learning a few phrases in
+          the local language can also go a long way in making connections and
+          showing respect. Before embarking on your journey, take the time to
+          research your destination. This includes understanding the local
+          culture, customs, and laws, as well as identifying top attractions,
+          restaurants, and accommodations. Doing so will help you navigate your
+          destination with confidence and avoid any cultural faux pas. Lorem
+          ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua</span
+        >
+      </div>
+      <div class="comment">
+        <h3 class="username">username</h3>
+        <span class="comment_content"
+          >aspects of traveling is immersing yourself in the local culture and
+          customs. This includes trying local cuisine, attending cultural events
+          and festivals, and interacting with locals. Learning a few phrases in
+          the local language can also go a long way in making connections and
+          showing respect. Before embarking on your journey, take the time to
+          research your destination. This includes understanding the local
+          culture, customs, and laws, as well as identifying top attractions,
+          restaurants, and accommodations. Doing so will help you navigate your
+          destination with confidence and avoid any cultural faux pas. Lorem
+          ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua</span
+        >
+      </div>
+
+      <div class="comment">
+        <h3 class="username">username</h3>
+        <span class="comment_content"
+          >aspects of traveling is immersing yourself in the local culture and
+          customs. This includes trying local cuisine, attending cultural events
+          and festivals, and interacting with locals. Learning a few phrases in
+          the local language can also go a long way in making connections and
+          showing respect. Before embarking on your journey, take the time to
+          research your destination. This includes understanding the local
+          culture, customs, and laws, as well as identifying top attractions,
+          restaurants, and accommodations. Doing so will help you navigate your
+          destination with confidence and avoid any cultural faux pas. Lorem
+          ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+          tempor incididunt ut labore et dolore magna aliqua</span
+        >
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // index.ejs가 다 로드 되면 실행해줘.
+  document.addEventListener('DOMContentLoaded', function () {
+    const posts = document.querySelectorAll('#post');
+    posts.forEach((post) => {
+      post.addEventListener('click', function (e) {
+        e.preventDefault();
+        const post_id = post.querySelector('#post_id').textContent;
+
+        fetch(`/api/posts/${post_id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((res) => {
+            // 첫 번째 단계: 응답이 성공적인지 확인
+
+            return res.json();
+          })
+          .then((data) => {
+            window.location.href = `/api/posts/detail/${data.post[0].post_id}`;
+            console.log(data.post[0].post_id);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    });
+  });
+</script>

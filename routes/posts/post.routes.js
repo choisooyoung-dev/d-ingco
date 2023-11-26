@@ -11,6 +11,17 @@ const { postValidate } = require('../../middlewares/validator.js');
 const { validationResult } = require('express-validator');
 const prisma = new PrismaClient();
 
+router.get('/create', async (req, res, next) => {
+  try {
+    res.render('index', {
+      path: '/api/posts/create',
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 // 게시글 저장
 router.post('/', authMiddleware, postValidate, async (req, res, next) => {
   const errors = validationResult(req);
@@ -33,7 +44,9 @@ router.post('/', authMiddleware, postValidate, async (req, res, next) => {
       },
     });
     await prisma.$disconnect(); // prisma 연결 끊기
-    res.status(201).json({ Message: '게시글 저장이 완료되었습니다~' });
+    res
+      .status(201)
+      .json({ success: true, message: '게시글 저장이 완료되었습니다~' });
   } catch (error) {
     // console.log(error);
     next(error);
@@ -42,6 +55,7 @@ router.post('/', authMiddleware, postValidate, async (req, res, next) => {
 
 // 게시글 전체 조회
 router.get('/', async (req, res, next) => {
+  // console.log(req.params.post_id);
   try {
     const posts = await prisma.POST.findMany({
       select: {
@@ -62,7 +76,15 @@ router.get('/', async (req, res, next) => {
       const error = new Error('전체 조회에 실패했습니다.');
       throw error;
     }
-    return res.status(200).json(posts);
+
+    const descSortedPost = posts.reverse();
+
+    res.render('index', {
+      data: descSortedPost,
+      path: '/api/posts',
+    });
+
+    //return res.status(200).json(posts);
   } catch (error) {
     console.log(error);
     //res.status(400).json({ errorMessage: error.message });
@@ -70,8 +92,9 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// 게시글 상세 조회
-router.get('/:post_id', async (req, res, next) => {
+// 게시글 상세 페이지 렌더링 라우터
+// html 페이지를 json으로 파싱하려고 하기 때문에 따로 분리해줘야한다고 함
+router.get('/detail/:post_id', async (req, res, next) => {
   try {
     const { post_id } = req.params;
     const post = await prisma.POST.findMany({
@@ -87,6 +110,85 @@ router.get('/:post_id', async (req, res, next) => {
       },
       where: {
         post_id: +post_id,
+      },
+    });
+    if (!post) {
+      const error = new CustomError(ErrorTypes.PostNotExistError);
+      throw error;
+    }
+    return res.render('index', {
+      data: post,
+      path: '/api/posts/detail',
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
+// 게시글 상세 조회(데이터 가저오는 라우터)
+router.get('/:post_id', async (req, res, next) => {
+  try {
+    const { post_id } = req.params;
+    console.log(post_id);
+    const post = await prisma.POST.findMany({
+      select: {
+        post_id: true,
+        title: true,
+        content: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+      where: {
+        post_id: +post_id,
+      },
+    });
+    if (!post) {
+      const error = new CustomError(ErrorTypes.PostNotExistError);
+      throw error;
+    }
+    res.status(200).json({ post });
+  } catch (error) {
+    console.log(error);
+    // return res.status(404).json({ message: error.message });
+    next(error);
+  }
+});
+
+// 게시글 상세 조회
+router.get('/search/:searchKeyword', async (req, res, next) => {
+  try {
+    const { searchKeyword } = req.params;
+    console.log('searchKeyword: ', searchKeyword);
+    const post = await prisma.POST.findMany({
+      select: {
+        post_id: true,
+        title: true,
+        content: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+      where: {
+        OR: [
+          {
+            title: {
+              contains: searchKeyword,
+            }
+          },
+          {
+            content: {
+              contains: searchKeyword,
+            }
+          }
+
+        ]
+
       },
     });
     if (!post) {
@@ -158,7 +260,9 @@ router.put(
         },
       });
       await prisma.$disconnect(); // prisma 연결 끊기
-      res.status(201).json({ Message: '수정이 완료되었습니다~' });
+      res
+        .status(201)
+        .json({ success: true, message: '수정이 완료되었습니다~' });
     } catch (error) {
       console.log(error);
       next(error);
@@ -201,7 +305,9 @@ router.delete('/:post_id', authMiddleware, async (req, res, next) => {
         post_id: +post_id,
       },
     });
-    res.status(200).json({ errorMessage: '삭제가 완료되었습니다!' });
+    res
+      .render(200, 'index')
+      .json({ success: true, message: '삭제가 완료되었습니다!' });
   } catch (error) {
     console.log(error);
     next(error);

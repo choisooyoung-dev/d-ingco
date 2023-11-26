@@ -13,18 +13,30 @@ const {
 const { userLoginValidate } = require('../../middlewares/validator');
 const { validationResult } = require('express-validator');
 
+router.get('/login', async (req, res, next) => {
+  try {
+    res.render('index', {
+      path: '/api/users/login',
+    });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 // LOGIN
 router.post('/login', userLoginValidate, async (req, res, next) => {
   const errors = validationResult(req);
   try {
     const { username, password } = req.body; // body 값 조회
+    console.log('username, password: ', username, password);
+    console.log("login API 실행");
 
-    // console.log(req.body);
+    //console.log(req.body);
     // 조회 : 회원 정보
     // id로 검색하고 pw 값 받아오기
     const user = await prisma.USER.findMany({
       where: {
-        username: username,
+        username,
       },
     });
     await prisma.$disconnect();
@@ -37,7 +49,7 @@ router.post('/login', userLoginValidate, async (req, res, next) => {
 
     // ERR 400 : 아이디, 이메일 미존재
     if (user.length === 0) {
-      const error = new CustomError(ErrorTypes.UserUsernameExistError);
+      const error = new CustomError(ErrorTypes.UserUsernameNotExistError);
       throw error;
     }
     // 조회 : 암호화된 비밀번호
@@ -58,7 +70,8 @@ router.post('/login', userLoginValidate, async (req, res, next) => {
     });
     res.cookie('authorization', `Bearer ${token}`);
 
-    res.status(200).json({ token: token });
+    res.status(200).json({ success: true, message: '로그인 성공' });
+    //res.redirect('/api/posts');
   } catch (error) {
     // return res.status(401).json({ message: error.message });
     console.log(error);
@@ -70,9 +83,11 @@ router.post('/login', userLoginValidate, async (req, res, next) => {
 router.get('/logout', authMiddleware, async (req, res, next) => {
   try {
     res.clearCookie('authorization');
-    res.status(200).json({ message: '로그아웃 성공' });
+    res.status(200).json({ success: true, message: '로그아웃 성공' });
+    // res.redirect('/api/posts');
   } catch (error) {
     console.log(error);
+    next(error);
   }
 });
 
