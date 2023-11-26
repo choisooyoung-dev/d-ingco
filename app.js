@@ -32,7 +32,7 @@ app.use(bodyParser.json());
 
 app.use('/api/users', signupRouter);
 app.use('/api/users', authRouter);
-app.use('/api/users/myPage', infoRouter);
+app.use('/api/users/user-info', infoRouter);
 app.use('/api/posts', postRouter);
 app.use(ErrorHandler);
 app.use('/api/posts', commentRouter);
