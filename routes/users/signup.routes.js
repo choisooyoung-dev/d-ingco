@@ -27,7 +27,6 @@ router.get('/signup', async (req, res, next) => {
 router.post('/signup', userSignupValidate, async (req, res, next) => {
   const errors = validationResult(req);
   const { username, password, confirmPassword, name, email } = req.body; // body 값 조회
-  console.log('req.body: ', req.body);
 
   try {
     // 입력하지 않은 값이 있을 경우;
@@ -76,7 +75,7 @@ router.post('/signup', userSignupValidate, async (req, res, next) => {
       },
     });
     await prisma.$disconnect();
-    res.redirect('/api/posts');
+    res.status(200).json({ success: true, message: '회원가입 성공' });
   } catch (error) {
     //console.log(error);
     next(error);
