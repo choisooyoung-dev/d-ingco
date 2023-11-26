@@ -28,11 +28,9 @@ router.get('/login', async (req, res, next) => {
 router.post('/login', userLoginValidate, async (req, res, next) => {
   const errors = validationResult(req);
   try {
-    // const username = document.getElementById('username').value;
-    // const password = document.getElementById('password').value;
-    // console.log(username, password);
-    // console.log(req.params);
     const { username, password } = req.body; // body 값 조회
+    console.log('username, password: ', username, password);
+    console.log("login API 실행");
 
     // console.log(req.body);
     // 조회 : 회원 정보

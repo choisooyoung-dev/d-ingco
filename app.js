@@ -9,6 +9,7 @@ const signupRouter = require('./routes/users/signup.routes.js');
 const postRouter = require('./routes/posts/post.routes.js');
 const infoRouter = require('./routes/users/info.routes.js');
 const { ErrorHandler } = require('./middlewares/Error.handler.js');
+const commentRouter = require('./routes/comments/comments.routes.js');
 
 app.set('port', process.env.PORT || 5500);
 
@@ -32,6 +33,7 @@ app.use('/api/users', authRouter);
 app.use('/api/users', infoRouter);
 app.use('/api/posts', postRouter);
 app.use(ErrorHandler);
+app.use('/api/posts', commentRouter);
 
 // 서버 실행
 app.listen(app.get('port'), () => {
