@@ -70,7 +70,7 @@
     const posts = document.querySelectorAll('#post');
     const postBtnWrap = document.querySelector('.post_btn_wrap');
     const postUsername = document.getElementById('username'); // 게시글의 username 조회하기
-    const usernameValue = postUsername.textContent; // text 값 가져오기
+    const usernameValue = postUsername.textContent.trim(); // text 값 가져오기
 
     // url에서 post_id 추출
     const url = window.location.href;
