@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 const authMiddleware = require('../../middlewares/auth.middleware');
 
 // 내 정보 조회 API
-<<<<<<< HEAD
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const { user_id } = res.locals.user[0]; // user_id 조회
@@ -26,21 +25,6 @@ router.get('/', authMiddleware, async (req, res) => {
   } catch (err) {
     console.log(err);
   }
-=======
-router.get('/:user_id', async (req, res) => {
-  const user_id = req.params.user_id;
-  const user = await prisma.USER.findUnique({
-    select: {
-      username: true,
-      name: true,
-      created_at: true,
-      updated_at: true,
-    },
-    where: { user_id },
-  });
-
-  if (user) return res.status(200).json({ success: true, data: user });
->>>>>>> 2fddc31d775b6f1db95d26525dd68cdeed4148a5
 });
 
 // 내 정보 수정 API
