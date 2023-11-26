@@ -1,42 +1,106 @@
 <div class="login_wrap">
-  <form>
+  <form id="signupForm" action="/api/users/signup" method="POST">
     <div class="row mb-3">
-      <label for="inputEmail3" class="col-sm-2 col-form-label">이름</label>
-      <div class="input_wrapcol-sm-10">
-        <input type="text" class="input_name form-control" id="inputEmail3" />
-      </div>
-    </div>
-    <div class="row mb-3">
-      <label for="inputEmail3" class="col-sm-2 col-form-label">아이디</label>
+      <label for="username" class="col-sm-2 col-form-label">아이디</label>
       <div class="input_wrapcol-sm-10">
         <input
           type="text"
           class="input_username form-control"
-          id="inputEmail3"
+          id="username"
+          name="username"
         />
       </div>
     </div>
     <div class="row mb-3">
-      <label for="inputEmail3" class="col-sm-2 col-form-label">이메일</label>
+      <label for="password" class="col-sm-2 col-form-label">비밀번호</label>
       <div class="input_wrapcol-sm-10">
-        <input type="email" class="input_email form-control" id="inputEmail3" />
+        <input
+          type="password"
+          class="input_pw form-control"
+          id="password"
+          name="password"
+        />
       </div>
     </div>
     <div class="row mb-3">
-      <label for="inputPassword3" class="col-sm-2 col-form-label"
-        >비밀번호</label
+      <label for="confirmPassword" class="col-sm-2 col-form-label"
+        >비밀번호 확인</label
       >
       <div class="input_wrapcol-sm-10">
         <input
           type="password"
           class="input_pw form-control"
-          id="inputPassword3"
+          id="confirmPassword"
+          name="confirmPassword"
         />
       </div>
     </div>
-
-    <button type="submit" class="login_submit_btn btn btn-outline-danger">
-      <a href="/api/users/signup">가입하기</a>
+    <div class="row mb-3">
+      <label for="name" class="col-sm-2 col-form-label">이름</label>
+      <div class="input_wrapcol-sm-10">
+        <input
+          type="text"
+          class="input_name form-control"
+          id="name"
+          name="name"
+        />
+      </div>
+    </div>
+    <div class="row mb-3">
+      <label for="email" class="col-sm-2 col-form-label">이메일</label>
+      <div class="input_wrapcol-sm-10">
+        <input
+          type="email"
+          class="input_email form-control"
+          id="email"
+          name="email"
+        />
+      </div>
+    </div>
+    <button
+      type="button"
+      id="signupBtn"
+      class="login_submit_btn btn btn-outline-danger"
+    >
+      가입하기
     </button>
   </form>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const signupBtn = document.getElementById('signupBtn');
+    const signupForm = document.getElementById('signupForm');
+
+    signupBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // 로그인 폼 데이터 가져오기
+      const formData = new FormData(signupForm);
+      console.log('formData: ', formData);
+
+      const urlSearchParams = new URLSearchParams(formData);
+
+      // 서버로 로그인 요청 보내기
+      fetch('/api/users/signup', {
+        method: 'POST',
+        body: urlSearchParams,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            // 로그인 성공 시에 원하는 동작 수행
+            console.log('회원가입 성공', data);
+            // 페이지 이동 등의 추가 작업 가능
+            window.location.href = '/api/posts';
+          } else {
+            // 로그인 실패 시에 alert 창에 에러 메시지 표시
+            alert(data.message);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+  });
+</script>
