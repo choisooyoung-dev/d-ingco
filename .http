@@ -10,7 +10,7 @@ content-type: application/json
     "confirmPassword": "123456",
     "name": "test3",
     "email": "test3@naver.com"
-} 
+}  
 
 ###
 # 로그인
@@ -21,8 +21,8 @@ content-type: application/json
 {
     "username":"test3",
     "password": "123456"
-} 
-
+}  
+   
 ###
 # 로그아웃
 
@@ -35,8 +35,8 @@ POST http://localhost:5500/api/posts
 content-type: application/json
 
 {
-    "title":"t2222",
-    "content": "co22222t6"
+    "title":"[TIL] test",
+    "content": "test test"
 } 
 
 ###
