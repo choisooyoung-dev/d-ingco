@@ -14,7 +14,7 @@ router.get('/:user_id', async (req, res) => {
       created_at: true,
       updated_at: true,
     },
-    where: { user_id: user_id },
+    where: { user_id },
   });
 
   if (user) return res.status(200).json({ data: user });
