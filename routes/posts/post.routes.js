@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 const authMiddleware = require('../../middlewares/auth.middleware.js');
 const { PrismaClient } = require('@prisma/client'); // [이아영] 프리즈마 패키지
 const {
@@ -140,7 +142,27 @@ router.get('/detail/:post_id', async (req, res, next) => {
 router.get('/:post_id', async (req, res, next) => {
   try {
     const { post_id } = req.params;
-    console.log(post_id);
+
+    // jwt에서 user_id 추출하기
+    const { authorization } = req.cookies;
+    // jwt 토큰이 있을 경우 실행
+    if (authorization) {
+      const [tokenType, token] = authorization.split(' ');
+      const test = jwt.verify(token, process.env.PRIVATE_KEY);
+      if (token) {
+        jwt.verify(token, process.env.PRIVATE_KEY, (err, decoded) => {
+          if (err) {
+            return res
+              .status(401)
+              .json({ success: false, message: '인증되지 않은 토큰입니다.' });
+          }
+          res.locals.user = decoded;
+        });
+      } else {
+        res.locals.user = '';
+      }
+    }
+
     const post = await prisma.POST.findMany({
       select: {
         post_id: true,
@@ -160,7 +182,14 @@ router.get('/:post_id', async (req, res, next) => {
       const error = new CustomError(ErrorTypes.PostNotExistError);
       throw error;
     }
-    res.status(200).json({ post });
+
+    const username = res.locals.user ? res.locals.user.username : "none";
+    console.log('username: ', username);
+
+    res.status(200).json({
+      post,
+      username
+    });
   } catch (error) {
     console.log(error);
     // return res.status(404).json({ message: error.message });
