@@ -1,24 +1,22 @@
 <section class="detail_section">
   <div class="detail_section_wrap">
     <div class="detail_wrap">
-      <h1 class="detail_title"><%= data[0].title %></h1>
+      <h1 class="detail_title">
+        <%= data.post[0].title %>
+      </h1>
       <div class="user_info">
-        <span class="author"><%= data[0].user.username %></span>
+        <span class="author">
+          <%= data.post[0].user.username %>
+        </span>
       </div>
-      <p><%= data[0].content %></p>
+      <p>
+
+      </p>
       <div class="post_btn_wrap">
-        <button
-          id="post_update_btn"
-          type="submit"
-          class="post_update_btn post_btn btn btn-outline-danger"
-        >
+        <button id="post_update_btn" type="submit" class="post_update_btn post_btn btn btn-outline-danger">
           <a href="/api/users/login">수정하기</a>
         </button>
-        <button
-          id="post_del_btn"
-          type="submit"
-          class="post_del_btn post_btn btn btn-outline-danger"
-        >
+        <button id="post_del_btn" type="submit" class="post_del_btn post_btn btn btn-outline-danger">
           <a href="/api/users/login">삭제하기</a>
         </button>
       </div>
@@ -31,71 +29,23 @@
         <form action="" method="post">
           <label for="comment_form" class="col-sm-2 col-form-label">댓글</label>
           <div class="col-sm-10">
-            <input
-              type="text"
-              class="input_pw form-control"
-              id="comment_content"
-              name="comment_content"
-            />
+            <input type="text" class="input_pw form-control" id="comment_content" name="comment_content" />
           </div>
         </form>
-        <button
-          id="comment_submit_btn"
-          type="submit"
-          class="comment_submit_btn post_btn btn btn-outline-danger"
-        >
+        <button id="comment_submit_btn" type="submit" class="comment_submit_btn post_btn btn btn-outline-danger">
           <a href="/api/users/login">저장하기</a>
         </button>
       </div>
-      <div class="comment">
-        <h3 class="username">username</h3>
-        <span class="comment_content"
-          >aspects of traveling is immersing yourself in the local culture and
-          customs. This includes trying local cuisine, attending cultural events
-          and festivals, and interacting with locals. Learning a few phrases in
-          the local language can also go a long way in making connections and
-          showing respect. Before embarking on your journey, take the time to
-          research your destination. This includes understanding the local
-          culture, customs, and laws, as well as identifying top attractions,
-          restaurants, and accommodations. Doing so will help you navigate your
-          destination with confidence and avoid any cultural faux pas. Lorem
-          ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua</span
-        >
-      </div>
-      <div class="comment">
-        <h3 class="username">username</h3>
-        <span class="comment_content"
-          >aspects of traveling is immersing yourself in the local culture and
-          customs. This includes trying local cuisine, attending cultural events
-          and festivals, and interacting with locals. Learning a few phrases in
-          the local language can also go a long way in making connections and
-          showing respect. Before embarking on your journey, take the time to
-          research your destination. This includes understanding the local
-          culture, customs, and laws, as well as identifying top attractions,
-          restaurants, and accommodations. Doing so will help you navigate your
-          destination with confidence and avoid any cultural faux pas. Lorem
-          ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua</span
-        >
-      </div>
-
-      <div class="comment">
-        <h3 class="username">username</h3>
-        <span class="comment_content"
-          >aspects of traveling is immersing yourself in the local culture and
-          customs. This includes trying local cuisine, attending cultural events
-          and festivals, and interacting with locals. Learning a few phrases in
-          the local language can also go a long way in making connections and
-          showing respect. Before embarking on your journey, take the time to
-          research your destination. This includes understanding the local
-          culture, customs, and laws, as well as identifying top attractions,
-          restaurants, and accommodations. Doing so will help you navigate your
-          destination with confidence and avoid any cultural faux pas. Lorem
-          ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua</span
-        >
-      </div>
+      <% for (let i = 0; i < data.comments.length; i++) { %>
+        <div class="comment">
+          <h3 class="username">
+            <%= data.comments[i].comment_name %>
+          </h3>
+          <span class="comment_content">
+            <%= data.comments[i].comment_content %>
+          </span>
+        </div>
+        <% } %>
     </div>
   </div>
 </section>

@@ -36,25 +36,46 @@ router.post('/:post_id/comments', authMiddleware, commentValidate, async (req, r
       },
     });
     await prisma.$disconnect(); // prisma 연결 끊기
-    return res.status(201).json({ data: comment });
+    return res.status(201).json({  success: true, data: comment });
   } catch (error) {
     next(error);
   }
 });
 
-// 댓글 조회
-router.get('/:post_id/comments', async (req, res) => {
+// 댓글 조회 ejs 전달
+router.get('/detail/:post_id/comments', async (req, res, next) => {
   try {
-    const post_id = parseInt(req.params.post_id);
+    const { post_id } = req.params;
     const comments = await prisma.COMMENT.findMany({
       where: {
         post_id: +post_id,
       },
     });
+    const descComments = comments.reverse();
     await prisma.$disconnect(); // prisma 연결 끊기
-    res.status(200).json({ data: comments });
+    return res.render('index', {
+      Data: descComments,
+      path: '/api/posts/detail',
+    });
   } catch (error) {
-    res.status(400).json({ error });
+    next(error);
+  }
+});
+
+// 댓글 조회 - api
+router.get('/:post_id/comments', async (req, res, next) => {
+  try {
+    const { post_id } = req.params;
+    const comments = await prisma.COMMENT.findMany({
+      where: {
+        post_id: +post_id,
+      },
+    });
+    const descComments = comments.reverse();
+    await prisma.$disconnect(); // prisma 연결 끊기
+    res.status(200).json({ data: descComments });
+  } catch (error) {
+    next(error);
   }
 });
 
@@ -82,7 +103,8 @@ router.put('/:post_id/comments', authMiddleware, commentValidate, async (req, re
     await prisma.$disconnect(); // prisma 연결 끊기
     return res.status(201).json({ data: editComment });
   } catch (error) {
-    res.status(400).json({ error });
+    // res.status(400).json({ error });
+    next(error);
   }
 });
 
