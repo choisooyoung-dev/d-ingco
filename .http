@@ -28,6 +28,22 @@ content-type: application/json
 
 GET http://localhost:5500/api/users/logout
 
+##### 마이페이지 - 안정혁
+### 내 정보 조회
+# 
+GET http://localhost:5500/api/users/myPage
+
+###내 정보 수정
+# 
+PUT http://localhost:5500/api/users/myPage
+content-type: application/json
+
+{
+    "username": "test33",
+    "name": "test33",
+    "email": "test33@naver.com"
+} 
+
 ##### 게시글 - 이아영
 ###
 # 게시글 저장
