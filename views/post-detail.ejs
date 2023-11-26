@@ -3,7 +3,7 @@
     <div class="detail_wrap">
       <h1 class="detail_title"><%= data[0].title %></h1>
       <div class="user_info">
-        <span class="author"><%= data[0].user.username %></span>
+        <span class="author" id="username"><%= data[0].user.username %></span>
       </div>
       <p><%= data[0].content %></p>
       <div class="post_btn_wrap">
@@ -49,52 +49,16 @@
       </div>
       <div class="comment">
         <h3 class="username">username</h3>
-        <span class="comment_content"
-          >aspects of traveling is immersing yourself in the local culture and
-          customs. This includes trying local cuisine, attending cultural events
-          and festivals, and interacting with locals. Learning a few phrases in
-          the local language can also go a long way in making connections and
-          showing respect. Before embarking on your journey, take the time to
-          research your destination. This includes understanding the local
-          culture, customs, and laws, as well as identifying top attractions,
-          restaurants, and accommodations. Doing so will help you navigate your
-          destination with confidence and avoid any cultural faux pas. Lorem
-          ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua</span
-        >
+        <span class="comment_content">댓글1</span>
       </div>
       <div class="comment">
         <h3 class="username">username</h3>
-        <span class="comment_content"
-          >aspects of traveling is immersing yourself in the local culture and
-          customs. This includes trying local cuisine, attending cultural events
-          and festivals, and interacting with locals. Learning a few phrases in
-          the local language can also go a long way in making connections and
-          showing respect. Before embarking on your journey, take the time to
-          research your destination. This includes understanding the local
-          culture, customs, and laws, as well as identifying top attractions,
-          restaurants, and accommodations. Doing so will help you navigate your
-          destination with confidence and avoid any cultural faux pas. Lorem
-          ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua</span
-        >
+        <span class="comment_content">댓글2</span>
       </div>
 
       <div class="comment">
         <h3 class="username">username</h3>
-        <span class="comment_content"
-          >aspects of traveling is immersing yourself in the local culture and
-          customs. This includes trying local cuisine, attending cultural events
-          and festivals, and interacting with locals. Learning a few phrases in
-          the local language can also go a long way in making connections and
-          showing respect. Before embarking on your journey, take the time to
-          research your destination. This includes understanding the local
-          culture, customs, and laws, as well as identifying top attractions,
-          restaurants, and accommodations. Doing so will help you navigate your
-          destination with confidence and avoid any cultural faux pas. Lorem
-          ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-          tempor incididunt ut labore et dolore magna aliqua</span
-        >
+        <span class="comment_content">댓글3</span>
       </div>
     </div>
   </div>
@@ -104,30 +68,36 @@
   // index.ejs가 다 로드 되면 실행해줘.
   document.addEventListener('DOMContentLoaded', function () {
     const posts = document.querySelectorAll('#post');
-    posts.forEach((post) => {
-      post.addEventListener('click', function (e) {
-        e.preventDefault();
-        const post_id = post.querySelector('#post_id').textContent;
+    const postBtnWrap = document.querySelector('.post_btn_wrap');
+    const postUsername = document.getElementById('username'); // 게시글의 username 조회하기
+    const usernameValue = postUsername.textContent; // text 값 가져오기
 
-        fetch(`/api/posts/${post_id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-          .then((res) => {
-            // 첫 번째 단계: 응답이 성공적인지 확인
+    // url에서 post_id 추출
+    const url = window.location.href;
+    const parts = url.split('/');
+    const post_id = parts[parts.length - 1];
 
-            return res.json();
-          })
-          .then((data) => {
-            window.location.href = `/api/posts/detail/${data.post[0].post_id}`;
-            console.log(data.post[0].post_id);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+    fetch(`/api/posts/${post_id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        const username = data.username;
+        // 게시글 아이디 === 로그인한 아이디
+        if (usernameValue === username) {
+          // 본인 게시글일 때
+          postBtnWrap.style.display = 'block';
+        } else {
+          // 본인 게시글이 아닐 때
+          postBtnWrap.style.display = 'none';
+        }
+      })
+
+      .catch((error) => {
+        console.log(error);
       });
-    });
   });
 </script>
