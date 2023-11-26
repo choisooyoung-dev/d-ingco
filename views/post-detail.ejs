@@ -1,25 +1,23 @@
 <section class="detail_section">
   <div class="detail_section_wrap">
     <div class="detail_wrap">
-      <h1 class="detail_title"><%= data[0].title %></h1>
+      <h1 class="detail_title">
+        <%= data.post[0].title %>
+      </h1>
       <div class="user_info">
-        <span class="author" id="username"><%= data[0].user.username %></span>
+        <span class="author" id="username">
+          <%= data.post[0].user.username %>
+        </span>
       </div>
-      <p><%= data[0].content %></p>
+      <p>
+        <%= data.post[0].content %>
+      </p>
       <div class="post_btn_wrap">
-        <button
-          id="post_update_btn"
-          type="submit"
-          class="post_update_btn post_btn btn btn-outline-danger"
-        >
-          <a href="/api/users/login">수정하기</a>
+        <button id="post_update_btn" type="submit" class="post_update_btn post_btn btn btn-outline-danger">
+          <a>수정하기</a>
         </button>
-        <button
-          id="post_del_btn"
-          type="submit"
-          class="post_del_btn post_btn btn btn-outline-danger"
-        >
-          <a href="/api/users/login">삭제하기</a>
+        <button id="post_del_btn" type="submit" class="post_del_btn post_btn btn btn-outline-danger">
+          <a>삭제하기</a>
         </button>
       </div>
     </div>
@@ -28,38 +26,34 @@
     <br />
     <div class="comment_wrap">
       <div class="comment_form">
-        <form action="" method="post">
+        <form action="" method="post" id="comment_submit_form">
           <label for="comment_form" class="col-sm-2 col-form-label">댓글</label>
           <div class="col-sm-10">
-            <input
-              type="text"
-              class="input_pw form-control"
-              id="comment_content"
-              name="comment_content"
-            />
+            <input type="text" class="input_pw form-control" id="comment_content" name="comment_content" />
           </div>
         </form>
-        <button
-          id="comment_submit_btn"
-          type="submit"
-          class="comment_submit_btn post_btn btn btn-outline-danger"
-        >
-          <a href="/api/users/login">저장하기</a>
+        <button id="comment_submit_btn" type="submit" class="comment_submit_btn post_btn btn btn-outline-danger">
+          <a>저장하기</a>
         </button>
       </div>
-      <div class="comment">
-        <h3 class="username">username</h3>
-        <span class="comment_content">댓글1</span>
-      </div>
-      <div class="comment">
-        <h3 class="username">username</h3>
-        <span class="comment_content">댓글2</span>
-      </div>
-
-      <div class="comment">
-        <h3 class="username">username</h3>
-        <span class="comment_content">댓글3</span>
-      </div>
+      <% for (let i=0; i < data.comments.length; i++) { %>
+        <div class="comment">
+          <h3 class="comment_name">
+            <%= data.comments[i].comment_name %>
+          </h3>
+          <span class="comment_content">
+            <%= data.comments[i].comment_content %>
+          </span>
+          <div class="comment_btn_wrap">
+            <button id="comment_update_btn" type="submit" class="comment_update_btn post_btn btn btn-outline-danger">
+              <a>수정하기</a>
+            </button>
+            <button id="comment_del_btn" type="submit" class="comment_del_btn post_btn btn btn-outline-danger">
+              <a>삭제하기</a>
+            </button>
+          </div>
+        </div>
+        <% } %>
     </div>
   </div>
 </section>
@@ -69,6 +63,7 @@
   document.addEventListener('DOMContentLoaded', function () {
     const posts = document.querySelectorAll('#post');
     const postBtnWrap = document.querySelector('.post_btn_wrap');
+    const commentElements = document.querySelectorAll('.comment');
     const postUsername = document.getElementById('username'); // 게시글의 username 조회하기
     const usernameValue = postUsername.textContent.trim(); // text 값 가져오기
 
@@ -99,5 +94,70 @@
       .catch((error) => {
         console.log(error);
       });
+    //   commentElements.forEach(commentElement => {
+    //     const commentName = commentElement.querySelector('.comment_name').textContent.trim();
+    //     const commentBtnWrap = commentElement.querySelector('.comment_btn_wrap')
+    //   fetch(`/api/posts/${post_id}`, {
+    //     method: 'GET',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //   })
+    //     .then((response) => response.json())
+    //     .then((data) => {
+    //       const username = data.username;
+    //       // 게시글 아이디 === 로그인한 아이디
+    //       if (commentName === username) {
+    //         // 본인 게시글일 때
+    //         commentBtnWrap.style.display = 'block';
+    //       } else {
+    //         // 본인 게시글이 아닐 때
+    //         commentBtnWrap.style.display = 'none';
+    //       }
+    //     })
+
+    //     .catch((error) => {
+    //       console.log(error);
+    //     });
+    // });
+  })
+  document.addEventListener('DOMContentLoaded', function () {
+    const commentSubmitBtn = document.getElementById('comment_submit_btn');
+    const commentSubmitForm = document.getElementById('comment_submit_form');
+
+    commentSubmitBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // 게시글 폼 데이터 가져오기
+      const formData = new FormData(commentSubmitForm);
+
+      const urlSearchParams = new URLSearchParams(formData);
+
+      // url에서 post_id 추출
+      const url = window.location.href;
+      const parts = url.split('/');
+      const post_id = parts[parts.length - 1];
+
+      // 서버로 폼 데이터 요청 보내기
+      fetch(`/api/posts/${post_id}/comments`, {
+        method: 'POST',
+        body: urlSearchParams,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            // 로그인 성공 시에 원하는 동작 수행
+            console.log('게시글 작성 성공', data);
+            // 페이지 이동 등의 추가 작업 가능
+            window.location.href = `/api/posts/detail/${post_id}`;
+          } else {
+            // 로그인 실패 시에 alert 창에 에러 메시지 표시
+            alert(data.message);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
   });
 </script>

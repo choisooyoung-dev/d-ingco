@@ -162,8 +162,18 @@ router.get('/detail/:post_id', async (req, res, next) => {
       const error = new CustomError(ErrorTypes.PostNotExistError);
       throw error;
     }
+    const comments = await prisma.COMMENT.findMany({
+      where: {
+        post_id: +post_id,
+      },
+    });
+    const descComments = comments.reverse()
+    const combinedData = {
+      post: post,
+      comments: descComments,
+    };
     return res.render('index', {
-      data: post,
+      data: combinedData,
       path: '/api/posts/detail',
     });
   } catch (error) {
