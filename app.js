@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/users', signupRouter);
 app.use('/api/users', authRouter);
-app.use('/api/users', infoRouter);
+app.use('/api/users/myPage', infoRouter);
 app.use('/api/posts', postRouter);
 app.use(ErrorHandler);
 app.use('/api/posts', commentRouter);
