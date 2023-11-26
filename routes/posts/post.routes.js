@@ -118,6 +118,51 @@ router.get('/:post_id', async (req, res, next) => {
   }
 });
 
+// 게시글 상세 조회
+router.get('/search/:searchKeyword', async (req, res, next) => {
+  try {
+    const { searchKeyword } = req.params;
+    console.log('searchKeyword: ', searchKeyword);
+    const post = await prisma.POST.findMany({
+      select: {
+        post_id: true,
+        title: true,
+        content: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+      where: {
+        OR: [
+          {
+            title: {
+              contains: searchKeyword,
+            }
+          },
+          {
+            content: {
+              contains: searchKeyword,
+            }
+          }
+
+        ]
+
+      },
+    });
+    if (!post) {
+      const error = new CustomError(ErrorTypes.PostNotExistError);
+      throw error;
+    }
+    res.status(200).json({ post });
+  } catch (error) {
+    console.log(error);
+    // return res.status(404).json({ message: error.message });
+    next(error);
+  }
+});
+
 // 게시글 수정
 router.put(
   '/:post_id',
