@@ -13,7 +13,7 @@
             alt="..."
           />
           <div class="card-body">
-            <p id="post_id"><%= data[i].post_id %></p>
+            <p class="hide" id="post_id"><%= data[i].post_id %></p>
             <h5 id="title" class="card-title"><%= data[i].title %></h5>
             <p id="content" class="card-text"><%= data[i].content %></p>
           </div>
@@ -22,5 +22,36 @@
       <% } %>
     </div>
   </div>
-  <div class="more_btn">View More</div>
+  <!-- <div class="more_btn">View More</div> -->
 </section>
+<script>
+  // index.ejs가 다 로드 되면 실행해줘.
+  document.addEventListener('DOMContentLoaded', function () {
+    const posts = document.querySelectorAll('#post');
+    posts.forEach((post) => {
+      post.addEventListener('click', function (e) {
+        e.preventDefault();
+        const post_id = post.querySelector('#post_id').textContent;
+
+        fetch(`/api/posts/${post_id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((res) => {
+            // 첫 번째 단계: 응답이 성공적인지 확인
+
+            return res.json();
+          })
+          .then((data) => {
+            window.location.href = `/api/posts/detail/${data.post[0].post_id}`;
+            console.log(data.post[0].post_id);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    });
+  });
+</script>
