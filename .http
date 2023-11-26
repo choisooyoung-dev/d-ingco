@@ -60,3 +60,35 @@ content-type: application/json
 ###
 # 게시글 삭제
 DELETE http://localhost:500/api/posts/2
+
+##### 댓글 - 김주완
+# 댓글 저장
+POST http://localhost:5500/api/posts/1/comments
+content-type: application/json
+
+{
+    "comment_content": "test3"
+} 
+
+###
+# 댓글 조회
+GET http://localhost:5500/api/posts/1/comments
+
+###
+# 댓글 수정
+PUT http://localhost:5500/api/posts/1/comments
+content-type: application/json
+
+{
+    "comment_id":1,
+    "comment_content": "test33"
+} 
+
+###
+# 댓글 삭제
+DELETE http://localhost:5500/api/posts/1/comments
+content-type: application/json
+
+{
+        "comment_id":1
+} 
