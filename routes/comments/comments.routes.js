@@ -42,26 +42,6 @@ router.post('/:post_id/comments', authMiddleware, commentValidate, async (req, r
   }
 });
 
-// 댓글 조회 ejs 전달
-router.get('/detail/:post_id/comments', async (req, res, next) => {
-  try {
-    const { post_id } = req.params;
-    const comments = await prisma.COMMENT.findMany({
-      where: {
-        post_id: +post_id,
-      },
-    });
-    const descComments = comments.reverse();
-    await prisma.$disconnect(); // prisma 연결 끊기
-    return res.render('index', {
-      Data: descComments,
-      path: '/api/posts/detail',
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
 // 댓글 조회 - api
 router.get('/:post_id/comments', async (req, res, next) => {
   try {

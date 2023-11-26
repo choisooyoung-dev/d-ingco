@@ -10,7 +10,7 @@
         </span>
       </div>
       <p>
-
+        <%= data.post[0].content %>
       </p>
       <div class="post_btn_wrap">
         <button id="post_update_btn" type="submit" class="post_update_btn post_btn btn btn-outline-danger">
@@ -44,6 +44,14 @@
           <span class="comment_content">
             <%= data.comments[i].comment_content %>
           </span>
+          <div class="post_btn_wrap">
+            <button id="post_update_btn" type="submit" class="post_update_btn post_btn btn btn-outline-danger">
+              <a href="/api/users/login">수정하기</a>
+            </button>
+            <button id="post_del_btn" type="submit" class="post_del_btn post_btn btn btn-outline-danger">
+              <a href="/api/users/login">삭제하기</a>
+            </button>
+          </div>
         </div>
         <% } %>
     </div>
