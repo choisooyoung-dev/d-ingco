@@ -17,7 +17,7 @@ router.get('/:user_id', async (req, res) => {
     where: { user_id },
   });
 
-  if (user) return res.status(200).json({ data: user });
+  if (user) return res.status(200).json({ success: true, data: user });
 });
 
 module.exports = router;
