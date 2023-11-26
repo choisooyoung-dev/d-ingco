@@ -26,42 +26,36 @@ router.get('/signup', async (req, res, next) => {
 // 회원 정보 저장(CREATE)
 router.post('/signup', userSignupValidate, async (req, res, next) => {
   const errors = validationResult(req);
-  // console.log(validationResult(req));
   const { username, password, confirmPassword, name, email } = req.body; // body 값 조회
+  console.log('req.body: ', req.body);
 
   try {
-    // ERR 400 : 아이디 중복
-    const existsUsername = await prisma.USER.findUnique({
-      where: { username: username },
-    });
-
+    // 입력하지 않은 값이 있을 경우;
     if (!errors.isEmpty()) {
       const error = new ValidError();
       throw error;
     }
+
+    // 아이디 중복
+    const existsUsername = await prisma.USER.findUnique({
+      where: { username },
+    });
 
     if (existsUsername) {
       const error = new CustomError(ErrorTypes.UserUsernameExistError);
       throw error;
     }
 
-    // ERR 400 : 이메일 중복
+    // 이메일 중복
     const existsEmail = await prisma.USER.findUnique({
-      where: { email: email },
+      where: { email },
     });
     if (existsEmail) {
       const error = new CustomError(ErrorTypes.UserEmailExistError);
       throw error;
     }
 
-    // ERR 400 : 이메일 형식 에러
-    // const pattern = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-za-z0-9\-]+/;
-    // const result = pattern.test(email);
-    // if (!result) {
-    //   throw new Error('99-400-이메일을 형식에 맞춰서 작성해주시기 바랍니다.');
-    // }
-
-    // ERR 400 : 비밀번호 불일치
+    // 비밀번호 불일치
     if (password !== confirmPassword) {
       const error = new CustomError(ErrorTypes.UserConfirmPwMismatchError);
       throw error;
@@ -75,14 +69,14 @@ router.post('/signup', userSignupValidate, async (req, res, next) => {
     // 저장 : 회원정보
     const user = await prisma.USER.create({
       data: {
-        username: username,
+        username,
         password: new_password,
-        name: name,
-        email: email,
+        name,
+        email,
       },
     });
     await prisma.$disconnect();
-    res.status(201).json({ user_info: { username, name, email } });
+    res.redirect('/api/posts');
   } catch (error) {
     //console.log(error);
     next(error);
