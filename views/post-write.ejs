@@ -1,0 +1,75 @@
+<section class="detail_section detail_input_section">
+  <div class="detail_section_wrap">
+    <form
+      id="post_create_form"
+      action="/api/posts"
+      method="POST"
+      class="detail_wrap"
+    >
+      <h1 class="detail_title">
+        <input
+          name="title"
+          id="post_title"
+          placeholder="제목을 입력해주세요"
+          type="text"
+        />
+      </h1>
+
+      <p>
+        <textarea
+          name="content"
+          id=""
+          cols="30"
+          rows="10"
+          placeholder="내용을 작성해주세요"
+        ></textarea>
+      </p>
+      <div class="post_create_btn_wrap post_btn_wrap">
+        <button
+          id="post_create_btn"
+          type="button"
+          class="post_update_btn post_btn btn btn-outline-danger"
+        >
+          <!-- <a href="/api/users/login"></a> -->
+          작성하기
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const createBtn = document.getElementById('post_create_btn');
+    const postCreateForm = document.getElementById('post_create_form');
+
+    createBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // 게시글 폼 데이터 가져오기
+      const formData = new FormData(postCreateForm);
+
+      const urlSearchParams = new URLSearchParams(formData);
+
+      // 서버로 폼 데이터 요청 보내기
+      fetch('/api/posts', {
+        method: 'POST',
+        body: urlSearchParams,
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            // 로그인 성공 시에 원하는 동작 수행
+            console.log('게시글 작성 성공', data);
+            // 페이지 이동 등의 추가 작업 가능
+            window.location.href = '/api/posts';
+          } else {
+            // 로그인 실패 시에 alert 창에 에러 메시지 표시
+            alert(data.message);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+  });
+</script>
