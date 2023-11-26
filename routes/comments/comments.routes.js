@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../../middlewares/auth.middleware.js');
 const { PrismaClient } = require('@prisma/client');
-const { CustomError, ErrorTypes } = require('../../middlewares/Error.handler.js');
 const {
   CustomError,
   ErrorTypes,
