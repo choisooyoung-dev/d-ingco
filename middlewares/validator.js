@@ -23,4 +23,8 @@ const postValidate = [
   body('content').trim().isLength({ min: 1 }),
 ];
 
-module.exports = { userSignupValidate, userLoginValidate, postValidate };
+const commentValidate = [
+  body('comment_content').trim().isLength({ min: 1 }),
+];
+
+module.exports = { userSignupValidate, userLoginValidate, postValidate, commentValidate };

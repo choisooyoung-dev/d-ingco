@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('styles')); // css 적용
 app.use(express.static('public')); // image 적용
 app.use(cookieParser());
-app.use(cors({ credentials: true, origin: ['http://localhost:5500'] }));
+app.use(cors());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
