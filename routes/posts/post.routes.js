@@ -76,7 +76,7 @@ router.post('/', authMiddleware, postValidate, async (req, res, next) => {
 
     // 회원 번호 저장 미구현
     // user_id가 외래키로 설정되었기 때문에 게시글을 저장할 때 입력된 user_id 값이 USER 테이블에 값이 없을 경우 오류가 발생함
-    await prisma.POST.create({
+    const post = await prisma.POST.create({
       data: {
         user_id,
         title,
@@ -86,7 +86,7 @@ router.post('/', authMiddleware, postValidate, async (req, res, next) => {
     await prisma.$disconnect(); // prisma 연결 끊기
     res
       .status(201)
-      .json({ success: true, message: '게시글 저장이 완료되었습니다~' });
+      .json({ success: true, message: '게시글 저장이 완료되었습니다!', post: post });
   } catch (error) {
     // console.log(error);
     next(error);
