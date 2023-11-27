@@ -1,0 +1,114 @@
+##### 게시글 - 최수영
+###
+# 회원가입
+POST http://localhost:5500/api/users/signup
+content-type: application/json
+
+{
+    "username": "test3",
+    "password": "123456",
+    "confirmPassword": "123456",
+    "name": "test3",
+    "email": "test3@naver.com"
+}  
+
+###
+# 로그인
+
+POST http://localhost:5500/api/users/login
+content-type: application/json
+
+{
+    "username":"test3",
+    "password": "123456"
+}  
+   
+###
+# 로그아웃
+
+GET http://localhost:5500/api/users/logout
+
+##### 마이페이지 - 안정혁
+### 내 정보 조회
+# 
+GET http://localhost:5500/api/users/myPage
+
+###내 정보 수정
+# 
+PUT http://localhost:5500/api/users/myPage
+content-type: application/json
+
+{
+    "username": "test33",
+    "name": "test33",
+    "email": "test33@naver.com"
+} 
+
+##### 게시글 - 이아영
+###
+# 게시글 저장
+POST http://localhost:5500/api/posts
+content-type: application/json
+
+{
+    "title":"[TIL] test",
+    "content": "test test"
+} 
+
+###
+# 게시글 전체 조회
+GET http://localhost:5500/api/posts
+
+###
+# 게시글 상세 조회
+GET http://localhost:5500/api/posts/1
+
+###
+# 게시글 검색
+GET http://localhost:5500/api/posts/search/6
+
+### 
+# 게시글 수정
+PUT http://localhost:5500/api/posts/5
+content-type: application/json
+
+{
+    "title":"6666",
+    "content": "6666"
+} 
+
+###
+# 게시글 삭제
+DELETE http://localhost:500/api/posts/2
+
+##### 댓글 - 김주완
+# 댓글 저장
+POST http://localhost:5500/api/posts/1/comments
+content-type: application/json
+
+{
+    "comment_content": "test3"
+} 
+
+###
+# 댓글 조회
+GET http://localhost:5500/api/posts/1/comments
+
+###
+# 댓글 수정
+PUT http://localhost:5500/api/posts/1/comments
+content-type: application/json
+
+{
+    "comment_id":1,
+    "comment_content": "test33"
+} 
+
+###
+# 댓글 삭제
+DELETE http://localhost:5500/api/posts/1/comments
+content-type: application/json
+
+{
+        "comment_id":1
+} 

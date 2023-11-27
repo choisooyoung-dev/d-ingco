@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model USER {
+  user_id    Int       @id @default(autoincrement()) @map("user_id")
+  name       String    @map("name")
+  email      String    @unique @map("email")
+  created_at DateTime  @default(now()) @map("created_at")
+  updated_at DateTime  @updatedAt @map("updated_at")
+  password   String    @map("password")
+  username   String    @unique @map("username")
+  comment    COMMENT[]
+  post       POST[]
+
+  @@map("USER")
+}
+
+model POST {
+  post_id    Int       @id @default(autoincrement()) @map("post_id")
+  user_id    Int
+  title      String    @map("title")
+  content    String    @map("content") @db.Text
+  created_at DateTime  @default(now()) @map("created_at")
+  updated_at DateTime  @updatedAt @map("updated_at")
+  comment    COMMENT[]
+  user       USER      @relation(fields: [user_id], references: [user_id])
+
+  @@index([user_id], map: "POST_user_id_fkey")
+  @@map("POST")
+}
+
+model COMMENT {
+  comment_id      Int      @id @default(autoincrement()) @map("comment_id")
+  post_id         Int
+  user_id         Int
+  comment_content String   @map("comment_content") @db.Text
+  comment_name    String   @map("comment_name")
+  created_at      DateTime @default(now()) @map("created_at")
+  updated_at      DateTime @updatedAt @map("updated_at")
+  post            POST     @relation(fields: [post_id], references: [post_id])
+  user            USER     @relation(fields: [user_id], references: [user_id])
+
+  @@index([post_id], map: "COMMENT_post_id_fkey")
+  @@index([user_id], map: "COMMENT_user_id_fkey")
+  @@map("COMMENT")
+}

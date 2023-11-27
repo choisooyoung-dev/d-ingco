@@ -1,0 +1,89 @@
+<header class="header">
+  <h1 class="logo">
+    <a href="/api/posts"><i class="fa-solid fa-code"></i> D-ingco</a>
+  </h1>
+  <div class="contents_box" id="header_btns">
+    <span class="header_btn login_btn"
+      ><a href="/api/users/login">로그인</a></span
+    >
+    <span class="header_btn signup_btn"
+      ><a href="/api/users/signup">회원가입</a></span
+    >
+    <span id="logout_btn" class="header_btn logout_btn">로그아웃</span>
+    <!-- <a href="/api/users/logout">로그아웃</a> -->
+    <span class="header_btn info_btn"
+      ><a href="/api/users/user-info/detail">내 정보</a></span
+    >
+    <span class="header_btn post_create_btn"
+      ><a href="/api/posts/create">내 글 작성</a></span
+    >
+
+    <span class="search_wrap">
+      <input
+        id="search_keyword"
+        class="search_box"
+        type="text"
+        placeholder="검색"
+      />
+      <span id="search_btn" class="search_btn"
+        ><i class="fa-solid fa-magnifying-glass"></i
+      ></span>
+    </span>
+  </div>
+</header>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const header_btns = document.getElementById('header_btns');
+    const authorizationCookie = document.cookie
+      .split(';')
+      .find((cookie) => cookie.trim().startsWith('authorization='));
+
+    if (authorizationCookie) {
+      // 로그인 상태
+      header_btns
+        .querySelectorAll('.login_btn, .signup_btn')
+        .forEach((btn) => (btn.style.display = 'none'));
+      header_btns
+        .querySelectorAll('.logout_btn, .info_btn')
+        .forEach((btn) => (btn.style.display = 'inline-block'));
+      header_btns
+        .querySelectorAll('.logout_btn, .post_create_btn')
+        .forEach((btn) => (btn.style.display = 'inline-block'));
+    } else {
+      // 로그아웃 상태
+      header_btns
+        .querySelectorAll('.login_btn, .signup_btn')
+        .forEach((btn) => (btn.style.display = 'inline-block'));
+      header_btns
+        .querySelectorAll('.logout_btn, .info_btn')
+        .forEach((btn) => (btn.style.display = 'none'));
+      header_btns
+        .querySelectorAll('.logout_btn, .post_create_btn')
+        .forEach((btn) => (btn.style.display = 'none'));
+    }
+
+    // 로그아웃 기능
+    const logoutBtn = document.getElementById('logout_btn'); // 로그아웃 버튼 id에 따라 수정
+    logoutBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+
+      // 서버로 로그아웃 요청 보내기
+      fetch('/api/users/logout', {
+        method: 'GET',
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          // 로그아웃 성공 시에 원하는 동작 수행
+          if (data.success) {
+            alert('로그아웃 성공');
+            window.location.href = '/api/posts'; // 또는 다른 리다이렉션 처리
+          } else {
+            alert('로그아웃 실패'); // 실패 시 메시지 표시
+          }
+        })
+        .catch((error) => {
+          console.error('로그아웃 실패', error);
+        });
+    });
+  });
+</script>
