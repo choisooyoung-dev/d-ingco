@@ -89,16 +89,8 @@ router.get('/:post_id/comments', async (req, res, next) => {
 // 댓글 수정
 router.put('/:post_id/comments', authMiddleware, commentValidate, async (req, res) => {
   try {
-    const { post_id } = req.params;
-    const { user_id } = res.locals.user[0];
     const { comment_id, comment_content } = req.body;
     const numberComment_id = parseInt(comment_id);
-    const commentUser = await prisma.COMMENT.findFirst({
-      where: {
-        comment_id: +numberComment_id,
-        user_id: +user_id,
-      },
-    });
     const editComment = await prisma.COMMENT.update({
       where: {
         comment_id: +numberComment_id,
@@ -108,33 +100,24 @@ router.put('/:post_id/comments', authMiddleware, commentValidate, async (req, re
       },
     });
     await prisma.$disconnect(); // prisma 연결 끊기
-    return res.status(201).json({ data: editComment });
+    return res.status(201).json({ success: true, data: editComment });
   } catch (error) {
-    // res.status(400).json({ error });
-    next(error);
+    res.status(400).json({ error });
   }
 });
 
 // 댓글 삭제
 router.delete('/:post_id/comments', authMiddleware, async (req, res) => {
   try {
-    const { post_id } = req.params;
-    const { user_id } = res.locals.user[0];
     const { comment_id } = req.body;
     const numberComment_id = parseInt(comment_id);
-    const commentUser = await prisma.COMMENT.findFirst({
-      where: {
-        comment_id: +numberComment_id,
-        user_id: +user_id,
-      },
-    });
     const deleteComment = await prisma.COMMENT.delete({
       where: {
         comment_id: +numberComment_id,
       },
     });
     await prisma.$disconnect(); // prisma 연결 끊기
-    return res.status(201).json({ message: "삭제 완료" });
+    return res.status(201).json({ success: true, message: "삭제 완료" });
   } catch (error) {
     res.status(400).json({ error });
   }
