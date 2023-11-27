@@ -29,11 +29,15 @@
     <div class="comment_wrap">
       <div class="comment_form">
         <form action="" method="post">
-          <label for="comment_form" class="col-sm-2 col-form-label">댓글</label>
-          <div class="col-sm-10">
+          <label
+            for="comment_form"
+            class="comment_label col-sm-2 col-form-label"
+            >댓글</label
+          >
+          <div class="comment_input_wrap col-sm-10">
             <input
               type="text"
-              class="input_pw form-control"
+              class="comment_input form-control"
               id="comment_content"
               name="comment_content"
             />
@@ -70,7 +74,7 @@
     const posts = document.querySelectorAll('#post');
     const postBtnWrap = document.querySelector('.post_btn_wrap');
     const postUsername = document.getElementById('username'); // 게시글의 username 조회하기
-    const usernameValue = postUsername.textContent; // text 값 가져오기
+    const usernameValue = postUsername.textContent.trim(); // text 값 가져오기
 
     // url에서 post_id 추출
     const url = window.location.href;

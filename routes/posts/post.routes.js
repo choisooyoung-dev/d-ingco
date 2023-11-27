@@ -13,6 +13,12 @@ const { postValidate } = require('../../middlewares/validator.js');
 const { validationResult } = require('express-validator');
 const prisma = new PrismaClient();
 
+router.get('/images/:imageName', function (req, res) {
+  var imgName = req.params.imageName;
+  console.log('이미지 요청: ' + imgName);
+  res.sendFile('/public/image/' + imgName);
+});
+
 router.get('/create', async (req, res, next) => {
   try {
     res.render('index', {
@@ -173,12 +179,12 @@ router.get('/:post_id', async (req, res, next) => {
       throw error;
     }
 
-    const username = res.locals.user ? res.locals.user.username : "none";
+    const username = res.locals.user ? res.locals.user.username : 'none';
     console.log('username: ', username);
 
     res.status(200).json({
       post,
-      username
+      username,
     });
   } catch (error) {
     console.log(error);

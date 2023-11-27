@@ -4,6 +4,16 @@ header a {
   outline: none;
 }
 
+.logo_img {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.form-control:focus {
+  outline: none !important;
+}
+
 header a:hover,
 header a:active {
   text-decoration: none;
@@ -14,6 +24,7 @@ header a:active {
 body {
   font-family: 'Noto Sans KR', sans-serif;
   background-color: #181a2a;
+  line-height: 32px;
 }
 
 .header {
@@ -106,6 +117,11 @@ section {
   border: 2px solid rgba(233, 52, 79, 0.3);
   color: #fff;
   height: 500px;
+}
+
+.card_text {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .more_btn {
@@ -203,7 +219,7 @@ section {
 }
 
 .detail_section {
-  width: 100%;
+  /* width: 100%; */
 }
 
 .detail_section_wrap {
@@ -213,7 +229,7 @@ section {
   margin-top: 50px;
   margin-bottom: 150px;
   color: #fff;
-  width: 70%;
+  width: 100%;
   height: 100%;
   display: flex;
   justify-content: center;
@@ -243,8 +259,10 @@ section {
 }
 
 .comment_wrap {
+  width: 100%;
   border-top: 2px solid #e9344f;
-  padding-top: 100px;
+  /* padding-top: 100px; */
+  padding: 100px 50px 0 50px;
   margin-bottom: 100px;
 }
 
@@ -265,6 +283,43 @@ post_btn_wrap button {
   margin-left: 300px;
   margin-top: 30px;
   color: #e9344f;
+}
+
+.comment_input_wrap {
+  border-radius: 10px;
+  width: 100%;
+  background-color: #242535;
+}
+
+.comment_input_wrap input {
+  background-color: #242535 !important;
+  outline: none;
+}
+
+.comment_input_wrap:active {
+  outline: none !important;
+}
+
+.comment_label {
+  padding-left: 10px;
+  padding-bottom: 20px;
+}
+
+.comment_submit_btn {
+  width: 100%;
+  margin-left: 0 !important;
+}
+
+.comment_submit_btn:hover {
+  background-color: #242535;
+}
+
+/* 말줄임 */
+.truncated-content {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 3;
 }
 
 .post_wrap button:hover {
