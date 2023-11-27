@@ -47,7 +47,7 @@
           })
           .then((data) => {
             window.location.href = `/api/posts/detail/${data.post[0].post_id}`;
-            console.log(data.post[0].post_id);
+            //console.log(data.post[0].post_id);
           })
           .catch((error) => {
             console.log(error);
