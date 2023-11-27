@@ -14,7 +14,7 @@
           type="submit"
           class="post_update_btn post_btn btn btn-outline-danger"
         >
-          <a>수정하기</a>
+          <a href="/api/posts/detail/<%= data.post[0].post_id%>">수정하기</a>
         </button>
         <button
           id="post_del_btn"
@@ -30,7 +30,7 @@
     <br />
     <div class="comment_wrap">
       <div class="comment_form">
-        <form action="" method="post">
+        <form id="comment_submit_form" action="" method="post">
           <label
             for="comment_form"
             class="comment_label col-sm-2 col-form-label"
@@ -65,7 +65,7 @@
           data-target="comment_btn_wrap<%= i+1 %>"
         >
           <button
-            id="comment_del_btn"
+            id="comment_del_btn<%= i+1 %>"
             type="submit"
             class="comment_del_btn post_btn btn btn-outline-danger"
           >
@@ -111,7 +111,6 @@
           postBtnWrap.style.display = 'none';
         }
       })
-
       .catch((error) => {
         console.log(error);
       });
@@ -125,9 +124,7 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        //console.log(data);
         const username = data.username;
-        // console.log(username); // 왜 undefined가 나오냐고요.... 왜................
         commentBtnWrap.forEach((button) => {
           const target = button.getAttribute('data-target');
           const delBtn = document.getElementById(target);

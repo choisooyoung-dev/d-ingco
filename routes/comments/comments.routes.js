@@ -78,10 +78,8 @@ router.get('/:post_id/comments', async (req, res, next) => {
     const descComments = comments.reverse();
     await prisma.$disconnect(); // prisma 연결 끊기
     res.status(200).json({
-      data: {
-        descComments,
-        username
-      }
+      descComments,
+      username
     });
   } catch (error) {
     next(error);
