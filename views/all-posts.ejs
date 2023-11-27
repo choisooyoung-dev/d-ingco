@@ -80,15 +80,15 @@
             card.innerHTML = `
               <div class="col">
                 <div id="post" class="card">
-                  <img
-                    src="https://images.pexels.com/photos/2775196/pexels-photo-2775196.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
-                    class="card-img-top"
-                    alt="..."
-                  />
+                  <p class="logo_img">
+                    <img src="/images/imgdingco.PNG" alt="" />
+                  </p>
                   <div class="card-body">
                     <p class="hide" id="post_id">${post.post_id}</p>
                     <h5 id="title" class="card-title">${post.title}</h5>
-                    <p id="content" class="card-text">${post.content}</p>
+                    <div class="content_wrap">
+                      <p id="content" class="card-text">${post.content}</p>
+                    </div>
                   </div>
                 </div>
               </div>
