@@ -94,6 +94,50 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// 게시글 검색
+router.get('/search/:searchKeyword', async (req, res, next) => {
+  try {
+    console.log("검색실행됨");
+    const { searchKeyword } = req.params;
+    const post = await prisma.POST.findMany({
+      select: {
+        post_id: true,
+        title: true,
+        content: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+      where: {
+        OR: [
+          {
+            title: {
+              contains: searchKeyword,
+            }
+          },
+          {
+            content: {
+              contains: searchKeyword,
+            }
+          }
+        ]
+      },
+    });
+    if (!post) {
+      const error = new CustomError(ErrorTypes.PostNotExistError);
+      throw error;
+    }
+    res.render('index', { data: post.reverse() });
+    res.status(200).json({ post });
+
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 // 게시글 상세 페이지 렌더링 라우터
 // html 페이지를 json으로 파싱하려고 하기 때문에 따로 분리해줘야한다고 함
 router.get('/detail/:post_id', async (req, res, next) => {
@@ -118,8 +162,18 @@ router.get('/detail/:post_id', async (req, res, next) => {
       const error = new CustomError(ErrorTypes.PostNotExistError);
       throw error;
     }
+    const comments = await prisma.COMMENT.findMany({
+      where: {
+        post_id: +post_id,
+      },
+    });
+    const descComments = comments.reverse()
+    const combinedData = {
+      post: post,
+      comments: descComments,
+    };
     return res.render('index', {
-      data: post,
+      data: combinedData,
       path: '/api/posts/detail',
     });
   } catch (error) {
