@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 const authMiddleware = require('../../middlewares/auth.middleware.js');
 const { PrismaClient } = require('@prisma/client');
 const {
@@ -36,7 +38,7 @@ router.post('/:post_id/comments', authMiddleware, commentValidate, async (req, r
       },
     });
     await prisma.$disconnect(); // prisma 연결 끊기
-    return res.status(201).json({  success: true, data: comment });
+    return res.status(201).json({ success: true, data: comment });
   } catch (error) {
     next(error);
   }
@@ -46,6 +48,28 @@ router.post('/:post_id/comments', authMiddleware, commentValidate, async (req, r
 router.get('/:post_id/comments', async (req, res, next) => {
   try {
     const { post_id } = req.params;
+
+    // jwt에서 user_id 추출하기
+    const { authorization } = req.cookies;
+    // jwt 토큰이 있을 경우 실행
+    if (authorization) {
+      const [tokenType, token] = authorization.split(' ');
+      const test = jwt.verify(token, process.env.PRIVATE_KEY);
+      if (token) {
+        jwt.verify(token, process.env.PRIVATE_KEY, (err, decoded) => {
+          if (err) {
+            return res
+              .status(401)
+              .json({ success: false, message: '인증되지 않은 토큰입니다.' });
+          }
+          res.locals.user = decoded;
+        });
+      } else {
+        res.locals.user = '';
+      }
+    }
+    const username = res.locals.user ? res.locals.user.username : "none";
+
     const comments = await prisma.COMMENT.findMany({
       where: {
         post_id: +post_id,
@@ -53,7 +77,12 @@ router.get('/:post_id/comments', async (req, res, next) => {
     });
     const descComments = comments.reverse();
     await prisma.$disconnect(); // prisma 연결 끊기
-    res.status(200).json({ data: descComments });
+    res.status(200).json({
+      data: {
+        descComments,
+        username
+      }
+    });
   } catch (error) {
     next(error);
   }
