@@ -30,6 +30,38 @@ router.get('/create', async (req, res, next) => {
   }
 });
 
+router.get('/edit/:post_id', async (req, res, next) => {
+  try {
+    const { post_id } = req.params;
+    const post = await prisma.POST.findMany({
+      select: {
+        post_id: true,
+        title: true,
+        content: true,
+        user: {
+          select: {
+            username: true,
+          },
+        },
+      },
+      where: {
+        post_id: +post_id,
+      },
+    });
+    if (!post) {
+      const error = new CustomError(ErrorTypes.PostNotExistError);
+      throw error;
+    }
+    res.render('index', {
+      data: { post: post },
+      path: '/api/posts/edit',
+    });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 // 게시글 저장
 router.post('/', authMiddleware, postValidate, async (req, res, next) => {
   const errors = validationResult(req);
@@ -173,7 +205,7 @@ router.get('/detail/:post_id', async (req, res, next) => {
         post_id: +post_id,
       },
     });
-    const descComments = comments.reverse()
+    const descComments = comments.reverse();
     const combinedData = {
       post: post,
       comments: descComments,
@@ -247,6 +279,7 @@ router.get('/:post_id', async (req, res, next) => {
   }
 });
 
+
 // 게시글 수정
 router.put(
   '/:post_id',
@@ -270,8 +303,6 @@ router.put(
           post_id: +post_id,
         },
         data: {
-          // 수정 시간만 업데이트 되기 기능 추가 필요한데
-          // 다른 기능들 만들고 오자..ㅜ
           title: title,
           content: content,
         },
@@ -299,14 +330,10 @@ router.put(
         data: {
           title: title,
           content: content,
-          // 수정 시간만 업데이트 되기 기능 추가 필요한데
-          // 다른 기능들 만들고 오자..ㅜ
         },
       });
       await prisma.$disconnect(); // prisma 연결 끊기
-      res
-        .status(201)
-        .json({ success: true, message: '수정이 완료되었습니다~' });
+      res.status(200).json({ success: true, message: '수정이 완료되었습니다!' });
     } catch (error) {
       console.log(error);
       next(error);
@@ -346,12 +373,10 @@ router.delete('/:post_id', authMiddleware, async (req, res, next) => {
     await prisma.POST.delete({
       where: {
         // 회원 번호 식별 기능 미구현
-        post_id: +post_id,
+        post_id: +post_id
       },
     });
-    res
-      .render(200, 'index')
-      .json({ success: true, message: '삭제가 완료되었습니다!' });
+    res.status(200).json({ success: true, message: '삭제가 완료되었습니다!' });
   } catch (error) {
     console.log(error);
     next(error);
