@@ -1,6 +1,7 @@
 <section class="detail_section">
   <div class="detail_section_wrap">
     <div class="detail_wrap">
+      <p class="hide" id="post_id"><%= data.post[0].post_id%></p>
       <h1 class="detail_title"><%= data.post[0].title %></h1>
       <div class="user_info">
         <span class="author" id="username">
@@ -176,6 +177,36 @@
         } else {
           // 로그인 실패 시에 alert 창에 에러 메시지 표시
           alert(data.message);
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  });
+  // 댓글 삭제
+  const postDelBtn = document.getElementById('post_del_btn');
+
+  postDelBtn.addEventListener('click', function (e) {
+    e.preventDefault();
+
+    // url에서 post_id 추출
+    // const url = window.location.href;
+    // const parts = url.split('/');
+    // const post_id = parts[parts.length - 1];
+    const post_id = document.querySelector('#post_id').textContent.trim();
+    console.log('post_id: ', post_id);
+
+    // 서버로 폼 데이터 요청 보내기
+    fetch(`/api/posts/${post_id}`, {
+      method: 'DELETE',
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          alert('삭제가 완료되었습니다.');
+          window.location.href = '/api/posts';
+        } else {
+          console.log(data.message);
         }
       })
       .catch((error) => {
