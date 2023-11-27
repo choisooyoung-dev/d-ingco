@@ -34,7 +34,7 @@
       <div class="comment_form">
         <form id="comment_submit_form" action="" method="post">
           <label
-            for="comment_form"
+            for="comment_content"
             class="comment_label col-sm-2 col-form-label"
             >댓글</label
           >
@@ -56,23 +56,24 @@
         </button>
       </div>
       <% for (let i=0; i < data.comments.length; i++) { %>
-      <div class="comment">
-        <h3 class="comment_name"><%= data.comments[i].comment_name %></h3>
-        <span class="comment_content">
-          <%= data.comments[i].comment_content %>
-        </span>
-        <div
-          id="comment_btn_wrap<%= i+1 %>"
-          class="comment_btn_wrap"
-          data-target="comment_btn_wrap<%= i+1 %>"
-        >
-          <button
-            id="comment_del_btn<%= i+1 %>"
-            type="submit"
-            class="comment_del_btn post_btn btn btn-outline-danger"
-          >
-            <a>삭제하기</a>
-          </button>
+        <div class="comment">
+          <h1 class="comment_id hide" id="comment_id_<%= data.comments[i].comment_id %>">
+            <%= data.comments[i].comment_id %>
+          </h1>
+          <h3 class="comment_name">
+            <%= data.comments[i].comment_name %>
+          </h3>
+          <span class="comment_content">
+            <%= data.comments[i].comment_content %>
+          </span>
+          <div class="comment_btn_wrap">
+            <button id="comment_update_btn" type="submit" data="<%= data.comments[i].comment_id %>" class="comment_update_btn post_btn btn btn-outline-danger">
+              <a>수정하기</a>
+            </button>
+            <button id="comment_del_btn" type="submit" data="<%= data.comments[i].comment_id %>" class="comment_del_btn post_btn btn btn-outline-danger">
+              <a>삭제하기</a>
+            </button>
+          </div>
         </div>
       </div>
       <% } %>
@@ -145,73 +146,127 @@
         console.log(error);
       });
   });
+  // 댓글 저장 버튼
+  document.addEventListener('DOMContentLoaded', function () {
+    const commentSubmitBtn = document.getElementById('comment_submit_btn');
+    const commentSubmitForm = document.getElementById('comment_submit_form');
 
-  // 댓글 저장
-  const commentSubmitBtn = document.getElementById('comment_submit_btn');
-  const commentSubmitForm = document.getElementById('comment_submit_form');
+    commentSubmitBtn.addEventListener('click', function (e) {
+      e.preventDefault();
 
-  commentSubmitBtn.addEventListener('click', function (e) {
-    e.preventDefault();
+      // 게시글 폼 데이터 가져오기
+      const formData = new FormData(commentSubmitForm);
+      const urlSearchParams = new URLSearchParams(formData);
 
-    // 게시글 폼 데이터 가져오기
-    const formData = new FormData(commentSubmitForm);
+      // url에서 post_id 추출
+      const url = window.location.href;
+      const parts = url.split('/');
+      const post_id = parts[parts.length - 1];
 
-    const urlSearchParams = new URLSearchParams(formData);
-
-    // url에서 post_id 추출
-    const url = window.location.href;
-    const parts = url.split('/');
-    const post_id = parts[parts.length - 1];
-
-    // 서버로 폼 데이터 요청 보내기
-    fetch(`/api/posts/${post_id}/comments`, {
-      method: 'POST',
-      body: urlSearchParams,
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          // 로그인 성공 시에 원하는 동작 수행
-          console.log('게시글 작성 성공', data);
-          // 페이지 이동 등의 추가 작업 가능
-          window.location.href = `/api/posts/detail/${post_id}`;
-        } else {
-          // 로그인 실패 시에 alert 창에 에러 메시지 표시
-          alert(data.message);
-        }
+      // 서버로 폼 데이터 요청 보내기
+      fetch(`/api/posts/${post_id}/comments`, {
+        method: 'POST',
+        body: urlSearchParams,
       })
-      .catch((error) => {
-        console.log(error);
-      });
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            // 로그인 성공 시에 원하는 동작 수행
+            console.log('게시글 작성 성공', data);
+            // 페이지 이동 등의 추가 작업 가능
+            window.location.href = `/api/posts/detail/${post_id}`;
+          } else {
+            // 로그인 실패 시에 alert 창에 에러 메시지 표시
+            alert(data.message);
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
   });
-  // 댓글 삭제
-  const postDelBtn = document.getElementById('post_del_btn');
+  // 댓글 수정 버튼 !!
+  document.addEventListener('DOMContentLoaded', function () {
+    const commentUpdateBtns = document.querySelectorAll('.comment_update_btn');
 
-  postDelBtn.addEventListener('click', function (e) {
-    e.preventDefault();
+    commentUpdateBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const commentId = btn.getAttribute('data');
+        const commentContent = prompt("댓글 수정 내용.");
 
-    // url에서 post_id 추출
-    // const url = window.location.href;
-    // const parts = url.split('/');
-    // const post_id = parts[parts.length - 1];
-    const post_id = document.querySelector('#post_id').textContent.trim();
-    console.log('post_id: ', post_id);
+        const formData = new FormData();
+        formData.append('comment_id', commentId);
+        formData.append('comment_content', commentContent);
 
-    // 서버로 폼 데이터 요청 보내기
-    fetch(`/api/posts/${post_id}`, {
-      method: 'DELETE',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          alert('삭제가 완료되었습니다.');
-          window.location.href = '/api/posts';
-        } else {
-          console.log(data.message);
-        }
-      })
-      .catch((error) => {
-        console.log(error);
+        // 여기서부터는 기존 코드와 동일
+        const urlSearchParams = new URLSearchParams(formData);
+        // url에서 post_id 추출
+        const url = window.location.href;
+        const parts = url.split('/');
+        const post_id = parts[parts.length - 1];
+
+        // 서버로 폼 데이터 요청 보내기
+        fetch(`/api/posts/${post_id}/comments`, {
+          method: 'PUT',
+          body: urlSearchParams
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              // 로그인 성공 시에 원하는 동작 수행
+              console.log('게시글 작성 성공', data);
+              // 페이지 이동 등의 추가 작업 가능
+              window.location.href = `/api/posts/detail/${post_id}`;
+            } else {
+              // 로그인 실패 시에 alert 창에 에러 메시지 표시
+              alert(data.message);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
       });
+    });
+  });
+  // 댓글 삭제 버튼
+  document.addEventListener('DOMContentLoaded', function () {
+    const commentUpdateBtns = document.querySelectorAll('.comment_del_btn');
+
+    commentUpdateBtns.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const commentId = btn.getAttribute('data');
+
+        const formData = new FormData();
+        formData.append('comment_id', commentId);
+
+        // 여기서부터는 기존 코드와 동일
+        const urlSearchParams = new URLSearchParams(formData);
+        // url에서 post_id 추출
+        const url = window.location.href;
+        const parts = url.split('/');
+        const post_id = parts[parts.length - 1];
+
+        // 서버로 폼 데이터 요청 보내기
+        fetch(`/api/posts/${post_id}/comments`, {
+          method: 'DELETE',
+          body: urlSearchParams
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              // 로그인 성공 시에 원하는 동작 수행
+              console.log('게시글 작성 성공', data);
+              // 페이지 이동 등의 추가 작업 가능
+              window.location.href = `/api/posts/detail/${post_id}`;
+            } else {
+              // 로그인 실패 시에 alert 창에 에러 메시지 표시
+              alert(data.message);
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    });
   });
 </script>
