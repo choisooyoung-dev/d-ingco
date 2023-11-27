@@ -204,7 +204,7 @@
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          alert('삭제가 완료되었습니다.');
+          alert('삭제가 완료되었습니다!');
           window.location.href = '/api/posts';
         } else {
           console.log(data.message);
