@@ -47,7 +47,6 @@
 
       // 게시글 폼 데이터 가져오기
       const formData = new FormData(postCreateForm);
-
       const urlSearchParams = new URLSearchParams(formData);
 
       // 서버로 폼 데이터 요청 보내기
@@ -59,9 +58,9 @@
         .then((data) => {
           if (data.success) {
             // 로그인 성공 시에 원하는 동작 수행
-            console.log('게시글 작성 성공', data);
+            alert('게시글 작성이 완료되었습니다!');
             // 페이지 이동 등의 추가 작업 가능
-            window.location.href = '/api/posts';
+            window.location.href = `/api/posts/detail/${data.post.post_id}`;
           } else {
             // 로그인 실패 시에 alert 창에 에러 메시지 표시
             alert(data.message);
